@@ -5,16 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * FileHandler — MEMBER 4's file handling module.
- *
  * Saves and loads all application data to/from plain text files
  * so data persists between app sessions.
- *
- * Lecture reference:
- *   File class lecture — File, BufferedReader, BufferedWriter,
- *                        FileReader, FileWriter, PrintWriter
- *   Topic 7            — try-catch for IOException,
- *                        multiple catch blocks, finally
  *
  * File structure (greencycle-data/ folder):
  *   users.txt     — one user account per line
@@ -43,9 +35,6 @@ public class FileHandler {
     /**
      * Loads users, residents and bookings from text files into DataStore.
      * If files do not exist (first run), creates them with sample data.
-     *
-     * Lecture — File class: new File(path), dir.exists(), dir.mkdir()
-     * Topic 7 — IOException caught separately from other exceptions
      */
     public static void loadAll() {
         // File class — check if data directory exists
@@ -86,9 +75,6 @@ public class FileHandler {
     /**
      * Writes all DataStore data to text files.
      * Called when the user closes the application window.
-     *
-     * Lecture — File class: new File(path), dir.exists(), dir.mkdir()
-     * Topic 7 — IOException caught in each save method
      */
     public static void saveAll() {
         // Ensure directory exists before writing
@@ -106,9 +92,6 @@ public class FileHandler {
     /**
      * Reads users.txt line by line using BufferedReader.
      * Lines starting with # are comments and are skipped.
-     *
-     * Lecture — BufferedReader, FileReader, readLine()
-     * Topic 7 — IOException caught, NumberFormatException caught separately
      */
     private static void loadUsers() {
         DataStore.users.clear();
@@ -141,17 +124,14 @@ public class FileHandler {
             }
 
         } catch (IOException e) {
-            // Topic 7 — catch IOException separately from other exceptions
             System.out.println("FileHandler: Error reading users.txt — " +
                 e.getMessage());
 
         } catch (Exception e) {
-            // Topic 7 — catch any other unexpected exception
             System.out.println("FileHandler: Unexpected error loading users — " +
                 e.getMessage());
 
         } finally {
-            // Topic 7 — finally: always close the reader
             if (reader != null) {
                 try { reader.close(); }
                 catch (IOException e) {
@@ -165,9 +145,6 @@ public class FileHandler {
     /**
      * Reads residents.txt line by line.
      * Waste types field uses semicolon separator (e.g. "Paper;Plastic").
-     *
-     * Lecture — BufferedReader, FileReader, readLine(), String.split()
-     * Topic 7 — try-catch-finally, IOException caught
      */
     private static void loadResidents() {
         DataStore.residents.clear();
@@ -220,9 +197,6 @@ public class FileHandler {
     /**
      * Reads bookings.txt line by line.
      * Also restores the booking counter so new IDs continue from the last one.
-     *
-     * Lecture — BufferedReader, FileReader, Integer.parseInt()
-     * Topic 7 — try-catch-finally, NumberFormatException caught separately
      */
     private static void loadBookings() {
         DataStore.bookings.clear();
@@ -249,7 +223,6 @@ public class FileHandler {
                 String collectionPoint = parts[6].trim();
                 String status          = parts[7].trim();
 
-                // Topic 7 — NumberFormatException caught below
                 int points = Integer.parseInt(parts[8].trim());
 
                 Booking b = new Booking(
@@ -273,7 +246,6 @@ public class FileHandler {
                 e.getMessage());
 
         } catch (NumberFormatException e) {
-            // Topic 7 — NumberFormatException: caught if points field is invalid
             System.out.println("FileHandler: Invalid number in bookings.txt — " +
                 e.getMessage());
 
@@ -297,9 +269,6 @@ public class FileHandler {
     // ── Save users to users.txt ───────────────────────────────────────────────
     /**
      * Writes all users to users.txt using PrintWriter and BufferedWriter.
-     *
-     * Lecture — PrintWriter, BufferedWriter, FileWriter, println()
-     * Topic 7 — IOException caught, finally closes writer
      */
     private static void saveUsers() {
         PrintWriter writer = null;
@@ -328,7 +297,6 @@ public class FileHandler {
                 e.getMessage());
 
         } finally {
-            // Topic 7 — finally: always close the writer
             if (writer != null) writer.close();
         }
     }
@@ -337,9 +305,6 @@ public class FileHandler {
     /**
      * Writes all residents to residents.txt.
      * Waste types joined with semicolon separator.
-     *
-     * Lecture — PrintWriter, BufferedWriter, FileWriter
-     * Topic 7 — try-catch-finally
      */
     private static void saveResidents() {
         PrintWriter writer = null;
@@ -381,9 +346,6 @@ public class FileHandler {
     // ── Save bookings to bookings.txt ─────────────────────────────────────────
     /**
      * Writes all bookings to bookings.txt.
-     *
-     * Lecture — PrintWriter, BufferedWriter, FileWriter
-     * Topic 7 — try-catch-finally
      */
     private static void saveBookings() {
         PrintWriter writer = null;
