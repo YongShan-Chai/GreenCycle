@@ -14,8 +14,6 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 
 /**
- * RegisterScreen — MEMBER 1's user registration screen.
- *
  * Creates both a User account and a linked Resident record in one form.
  *
  * JavaFX components (Part 1, 2, 4):
@@ -23,7 +21,6 @@ import java.util.ArrayList;
  *   Part 2  : Lambda event handlers
  *   Part 4  : TextField, PasswordField, CheckBox, Button, Label, ScrollPane
  *
- * Exception handling (Topic 7):
  *   try-catch-finally block
  *   Multiple catch blocks
  *   AppException thrown from DataStore validation methods
@@ -218,7 +215,7 @@ public class RegisterScreen {
             DataStore.residents.add(new Resident(id, name, unit, phone, wasteTypes));
             DataStore.users.add(new User(username, password, "user", id));
 
-            // Topic 7 — show success message
+            // show success message
             Alert ok = new Alert(Alert.AlertType.INFORMATION);
             ok.setTitle("Registration Successful");
             ok.setHeaderText(null);
@@ -232,15 +229,15 @@ public class RegisterScreen {
             new LoginScreen().show(stage);
 
         } catch (AppException e) {
-            // Topic 7 — catch custom AppException (validation errors)
+            // catch custom AppException (validation errors)
             lblError.setText(e.getMessage());
 
         } catch (Exception e) {
-            // Topic 7 — catch any other unexpected exceptions
+            // catch any other unexpected exceptions
             lblError.setText("An unexpected error occurred: " + e.getMessage());
 
         } finally {
-            // Topic 7 — finally block: always runs regardless of exception
+            // finally block: always runs regardless of exception
             // Here used to ensure the error label is visible
             lblError.setVisible(true);
         }
