@@ -1,7 +1,7 @@
 package ui;
 
 /**
- * StyleHelper — centralised design system for GreenCycle V3.
+ * StyleHelper — centralised design system for GreenCycle.
  *
  * All colour constants and reusable CSS style strings are defined here
  * so every screen shares a consistent visual language.

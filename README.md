@@ -1,4 +1,4 @@
-# GreenCycle V3 — Community Recycling & Waste Collection Scheduler
+# GreenCycle — Community Recycling & Waste Collection Scheduler
 Java II Group Assignment | JavaFX 8 | Oracle JDK 8 | No Maven
 
 ---
@@ -24,7 +24,7 @@ Requires Oracle JDK 8. JavaFX is bundled — no extra downloads needed.
 
 ## Project File Structure
 
-  GreenCycleV3/
+  GreenCycle/
   ├── compile.bat / compile.sh
   └── src/
       ├── Main.java

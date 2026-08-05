@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "====================================================="
-echo "  GreenCycle V3 - Compile and Run"
+echo "  GreenCycle - Compile and Run"
 echo "  Requires Oracle JDK 8 (JavaFX bundled)"
 echo "====================================================="
 echo ""
@@ -16,7 +16,7 @@ rm -f sources.txt
 if [ $EXIT_CODE -eq 0 ]; then
     echo ""
     echo " Compilation successful!"
-    echo " Starting GreenCycle V3..."
+    echo " Starting GreenCycle ..."
     echo ""
     echo " Demo accounts:"
     echo "   Admin : admin / admin123"

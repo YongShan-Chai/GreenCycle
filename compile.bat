@@ -1,6 +1,6 @@
 @echo off
 echo =====================================================
-echo   GreenCycle V3 - Compile and Run
+echo   GreenCycle - Compile and Run
 echo   Requires Oracle JDK 8 (JavaFX bundled)
 echo =====================================================
 echo.
@@ -15,7 +15,7 @@ if %errorlevel% == 0 (
     del sources.txt
     echo.
     echo  Compilation successful!
-    echo  Starting GreenCycle V3...
+    echo  Starting GreenCycle ...
     echo.
     echo  Demo accounts:
     echo    Admin : admin / admin123
