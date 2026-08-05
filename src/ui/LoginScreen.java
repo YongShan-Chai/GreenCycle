@@ -18,7 +18,7 @@ import javafx.stage.Stage;
  *   Part 1  : HBox, VBox, StackPane, GridPane layout panes
  *   Part 2  : Lambda event handlers (setOnAction, setOnMouseEntered/Exited)
  *   Part 3  : Circle shape for logo icon, Color for styling
- *   Part 4  : TextField, PasswordField, RadioButton, ToggleGroup, Button, Label
+ *   Part 4  : TextField, PasswordField, Button, Label
  *
  *   try-catch blocks around login logic
  *   AppException caught and displayed to user
@@ -28,8 +28,6 @@ public class LoginScreen {
     // JavaFX Part 4 — UI Control fields
     private TextField      txtUsername;
     private PasswordField txtPassword;
-    private RadioButton    rbUser;
-    private RadioButton    rbAdmin;
     private Label          lblError;
 
     public void show(Stage stage) {
@@ -151,24 +149,11 @@ public class LoginScreen {
         // JavaFX Part 2 — Lambda: press Enter to login
         txtPassword.setOnAction(e -> handleLogin(stage));
 
-        // JavaFX Part 4 — RadioButton and ToggleGroup for role selection
-        ToggleGroup roleGroup = new ToggleGroup();
-        rbUser  = new RadioButton("Resident / User");
-        rbAdmin = new RadioButton("Administrator");
-        rbUser.setToggleGroup(roleGroup);
-        rbAdmin.setToggleGroup(roleGroup);
-        rbUser.setSelected(true);
-        rbUser.setStyle(StyleHelper.bodyText());
-        rbAdmin.setStyle(StyleHelper.bodyText());
-
-        VBox roleRow = new VBox(8, rbUser, rbAdmin);
-
         // Form layout using GridPane (JavaFX Part 1)
         GridPane grid = new GridPane();
         grid.setHgap(16); grid.setVgap(14);
         grid.add(fLabel("Username :"), 0, 0); grid.add(txtUsername, 1, 0);
         grid.add(fLabel("Password :"), 0, 1); grid.add(txtPassword, 1, 1);
-        grid.add(fLabel("Login As :"), 0, 2); grid.add(roleRow,     1, 2);
 
         // Error label for displaying AppException messages
         lblError = new Label("");
@@ -193,13 +178,8 @@ public class LoginScreen {
         HBox regRow = new HBox(6, lblPrompt, btnRegister);
         regRow.setAlignment(Pos.CENTER);
 
-        // Demo hint
-        Label lblDemo = new Label("Demo: admin/admin123  |  ahmad/pass123  |  siti/pass123");
-        lblDemo.setStyle("-fx-font-size:10px;-fx-text-fill:" + StyleHelper.TEXT_MUTED + ";");
-        lblDemo.setAlignment(Pos.CENTER);
-
         VBox card = new VBox(18, lblTitle, lblSub, new Separator(),
-            grid, lblError, btnLogin, regRow, lblDemo);
+            grid, lblError, btnLogin, regRow);
         card.setMaxWidth(380);
         card.setPadding(new Insets(40));
         card.setStyle(StyleHelper.card());
@@ -212,46 +192,49 @@ public class LoginScreen {
     }
 
     // ── Login handler ──────────────────
-    private void handleLogin(Stage stage) {
-        lblError.setText("");
-        try {
-            String username = txtUsername.getText().trim();
-            String password = txtPassword.getText();
+private void handleLogin(Stage stage) {
+    // Clear any previous error message.
+    lblError.setText("");
 
-            // validate inputs — throws AppException if invalid
-            DataStore.validateNotEmpty(username, "Username");
-            DataStore.validateNotEmpty(password, "Password");
+    try {
+        // Get the values entered by the user.
+        String username = txtUsername.getText().trim();
+        String password = txtPassword.getText();
 
-            // try authentication
-            User user = DataStore.authenticate(username, password);
-            if (user == null) {
-                throw new AppException("Incorrect username or password. Please try again.");
-            }
+        // Check that both fields contain values.
+        DataStore.validateNotEmpty(username, "Username");
+        DataStore.validateNotEmpty(password, "Password");
 
-            // Role mismatch check
-            boolean wantsAdmin = rbAdmin.isSelected();
-            if (wantsAdmin && !user.isAdmin()) {
-                throw new AppException("This account does not have admin privileges.");
-            }
-            if (!wantsAdmin && user.isAdmin()) {
-                throw new AppException("Please select \"Administrator\" to log in as admin.");
-            }
+        // Search for an account matching the username and password.
+        User user = DataStore.authenticate(username, password);
 
-            Session.login(user);
-            if (user.isAdmin()) {
-                new AdminShell().show(stage);
-            } else {
-                new UserShell().show(stage);
-            }
-
-        } catch (AppException e) {
-            // catch custom AppException and display to user
-            lblError.setText(e.getMessage());
-        } catch (Exception e) {
-            // catch any unexpected exceptions
-            lblError.setText("Unexpected error: " + e.getMessage());
+        if (user == null) {
+            throw new AppException(
+                "Incorrect username or password. Please try again."
+            );
         }
+
+        // Save the authenticated user as the current logged-in user.
+        Session.login(user);
+
+        // Open the correct interface based on the user's stored role.
+        if (user.isAdmin()) {
+            new AdminShell().show(stage);
+        } else {
+            new UserShell().show(stage);
+        }
+
+    } catch (AppException e) {
+        // Display expected validation or authentication errors.
+        lblError.setText(e.getMessage());
+
+    } catch (Exception e) {
+        // Display an error if something unexpected happens.
+        lblError.setText(
+            "Unexpected error: " + e.getMessage()
+        );
     }
+}
 
     private Label fLabel(String t) {
         Label l = new Label(t);
