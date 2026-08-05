@@ -10,19 +10,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;   // JavaFX Part 3 — Shape
+import javafx.scene.shape.Circle; 
 import javafx.stage.Stage;
 
 /**
- * LoginScreen — MEMBER 1's authentication screen.
- *
  * JavaFX components used (Part 1, 2, 4):
  *   Part 1  : HBox, VBox, StackPane, GridPane layout panes
  *   Part 2  : Lambda event handlers (setOnAction, setOnMouseEntered/Exited)
  *   Part 3  : Circle shape for logo icon, Color for styling
  *   Part 4  : TextField, PasswordField, RadioButton, ToggleGroup, Button, Label
  *
- * Exception handling (Topic 7):
  *   try-catch blocks around login logic
  *   AppException caught and displayed to user
  */
@@ -214,18 +211,18 @@ public class LoginScreen {
         return panel;
     }
 
-    // ── Login handler — Topic 7: try-catch for AppException ──────────────────
+    // ── Login handler ──────────────────
     private void handleLogin(Stage stage) {
         lblError.setText("");
         try {
             String username = txtUsername.getText().trim();
             String password = txtPassword.getText();
 
-            // Topic 7: validate inputs — throws AppException if invalid
+            // validate inputs — throws AppException if invalid
             DataStore.validateNotEmpty(username, "Username");
             DataStore.validateNotEmpty(password, "Password");
 
-            // Topic 7: try authentication
+            // try authentication
             User user = DataStore.authenticate(username, password);
             if (user == null) {
                 throw new AppException("Incorrect username or password. Please try again.");
@@ -248,10 +245,10 @@ public class LoginScreen {
             }
 
         } catch (AppException e) {
-            // Topic 7: catch custom AppException and display to user
+            // catch custom AppException and display to user
             lblError.setText(e.getMessage());
         } catch (Exception e) {
-            // Topic 7: catch any unexpected exceptions
+            // catch any unexpected exceptions
             lblError.setText("Unexpected error: " + e.getMessage());
         }
     }
