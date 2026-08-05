@@ -176,12 +176,12 @@ public class RegisterScreen {
         return grid;
     }
 
-    // ── Register handler — Topic 7: try-catch-finally ─────────────────────────
+    // ── Register handler — try-catch-finally ─────────────────────────
     private void handleRegister(Stage stage) {
         lblError.setText("");
 
         try {
-            // ── Account validation — Topic 7: DataStore throws AppException ───
+            // ── Account validation —DataStore throws AppException ───
             String username = txtUsername.getText().trim();
             String password = txtPassword.getText();
             String confirm  = txtConfirm.getText();
