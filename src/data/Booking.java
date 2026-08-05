@@ -33,7 +33,7 @@ public class Booking {
         this.points          = 0;
     }
 
-    // Topic 1: getter methods
+    // getter methods
     public String getBookingId()       { return bookingId; }
     public String getResidentId()      { return residentId; }
     public String getResidentName()    { return residentName; }
@@ -44,14 +44,12 @@ public class Booking {
     public String getStatus()          { return status; }
     public int    getPoints()          { return points; }
 
-    // Topic 1: setter methods
+    // setter methods
     public void setStatus(String status) { this.status = status; }
     public void setPoints(int points)    { this.points = points; }
 
-    /**
-     * Returns a formatted string for ListView display.
-     * JavaFX Part 4 — used to populate ListView items.
-     */
+    //Returns a formatted string for ListView display.
+
     public String getListEntry() {
         String ptsStr = points > 0 ? " (" + points + " pts)" : "";
         return String.format("%-7s  %-18s  %-11s  %-18s  %-13s  %s%s",
