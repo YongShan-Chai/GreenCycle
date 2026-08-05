@@ -6,11 +6,6 @@ import java.util.Map;
 
 /**
  * DataStore — shared in-memory data layer for all modules.
- *
- * Lecture reference:
- *   Topic 1  — static fields and methods
- *   Topic 7  — validation methods that throw AppException (custom exception)
- *
  * Contains three ArrayLists (users, residents, bookings) plus
  * validation helper methods used across all form screens.
  */
@@ -112,12 +107,8 @@ public class DataStore {
         return top;
     }
 
-    // ── Validation methods — throw AppException (Topic 7) ────────────────────
-
-    /**
-     * Validates a Resident ID — throws AppException on failure.
-     * Topic 7: method declares 'throws AppException' and throws it explicitly.
-     */
+    // ── Validation methods — throw AppException ────────────────────
+    //Validates a Resident ID — throws AppException on failure.
     public static void validateResidentId(String id) throws AppException {
         if (id == null || id.trim().isEmpty()) {
             throw new AppException("Resident ID cannot be empty.");
@@ -128,10 +119,7 @@ public class DataStore {
         }
     }
 
-    /**
-     * Validates a phone number — must be 10 or 11 digits.
-     * Topic 7: throws AppException for invalid format.
-     */
+    //Validates a phone number — must be 10 or 11 digits.
     public static void validatePhone(String phone) throws AppException {
         if (phone == null || phone.trim().isEmpty()) {
             throw new AppException("Phone number cannot be empty.");
@@ -142,10 +130,7 @@ public class DataStore {
         }
     }
 
-    /**
-     * Validates a username — must be non-empty and not already taken.
-     * Topic 7: throws AppException.
-     */
+    //Validates a username — must be non-empty and not already taken.
     public static void validateUsername(String username) throws AppException {
         if (username == null || username.trim().isEmpty()) {
             throw new AppException("Username cannot be empty.");
@@ -159,10 +144,7 @@ public class DataStore {
         }
     }
 
-    /**
-     * Validates a password — must be at least 6 characters and match confirmation.
-     * Topic 7: throws AppException.
-     */
+    //Validates a password — must be at least 6 characters and match confirmation.
     public static void validatePassword(String password, String confirm) throws AppException {
         if (password == null || password.isEmpty()) {
             throw new AppException("Password cannot be empty.");
@@ -175,10 +157,7 @@ public class DataStore {
         }
     }
 
-    /**
-     * Validates that a required text field is not empty.
-     * Topic 7: throws AppException.
-     */
+    //Validates that a required text field is not empty.
     public static void validateNotEmpty(String value, String fieldName) throws AppException {
         if (value == null || value.trim().isEmpty()) {
             throw new AppException(fieldName + " cannot be empty.");
