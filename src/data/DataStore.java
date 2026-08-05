@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class DataStore {
 
-    // Topic 1: static ArrayLists shared by all modules
+    // static ArrayLists shared by all modules
     public static ArrayList<User>     users     = new ArrayList<User>();
     public static ArrayList<Resident> residents = new ArrayList<Resident>();
     public static ArrayList<Booking>  bookings  = new ArrayList<Booking>();
