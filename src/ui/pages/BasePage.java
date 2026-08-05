@@ -10,18 +10,16 @@ import java.util.function.Consumer;
 
 /**
  * BasePage — abstract base class for all page content modules.
- *
- * Lecture reference:
- *   Topic 2 — Inheritance: all page classes extend BasePage
+ * Inheritance: all page classes extend BasePage
  *             Code reuse: shared helper methods defined once here
  *             Polymorphism: build() is abstract, each subclass implements it
  *             Abstract class: cannot be instantiated directly
  *
- * Each of the 8 page classes extends BasePage and overrides build().
+ * Each of the 9 page classes extends BasePage and overrides build().
  */
 public abstract class BasePage {
 
-    // Topic 2: protected field accessible to all subclasses
+    // protected field accessible to all subclasses
     protected Consumer<String> navigate;
 
     /** Default constructor — no navigation callback. */
@@ -36,13 +34,13 @@ public abstract class BasePage {
 
     /**
      * Abstract method — MUST be overridden by every subclass.
-     * Topic 2 — Abstract method / polymorphism:
+     * Abstract method / polymorphism:
      * AdminDashboardPage, ManageResidentsPage, etc. each provide
      * their own implementation of build().
      */
     public abstract Node build();
 
-    // ── Shared helpers (Topic 2 — code reuse through inheritance) ─────────────
+    // ── Shared helpers (code reuse through inheritance) ─────────────
 
     /** Navigate to another page via the shell callback. */
     protected void goTo(String page) {
@@ -53,7 +51,7 @@ public abstract class BasePage {
     protected Button makeBtn(String text) {
         Button btn = new Button(text);
         btn.setStyle(StyleHelper.btnPrimary());
-        // JavaFX Part 2 — Lambda expressions for event handling
+        // Lambda expressions for event handling
         btn.setOnMouseEntered(e -> btn.setStyle(StyleHelper.btnPrimaryHover()));
         btn.setOnMouseExited(e  -> btn.setStyle(StyleHelper.btnPrimary()));
         return btn;
@@ -99,7 +97,7 @@ public abstract class BasePage {
         tf.setPromptText(prompt);
         tf.setPrefWidth(260);
         tf.setStyle(StyleHelper.inputField());
-        // JavaFX Part 2 — Lambda event: focus listener
+        // Lambda event: focus listener
         tf.focusedProperty().addListener((obs, old, focused) ->
             tf.setStyle(focused ? StyleHelper.inputFieldFocus() : StyleHelper.inputField()));
         return tf;
@@ -143,7 +141,7 @@ public abstract class BasePage {
 
     /**
      * Creates a ListView for displaying data records.
-     * JavaFX Part 4 — ListView component.
+     * ListView component.
      * Uses monospace font so formatted columns align correctly.
      */
     protected ListView<String> makeListView(int height) {
