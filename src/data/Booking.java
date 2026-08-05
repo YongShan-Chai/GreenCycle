@@ -1,16 +1,10 @@
 package data;
 
-/**
- * Booking — stores one waste-collection pickup booking.
- *
- * Lecture reference:
- *   Topic 1 — private fields, constructors, getters/setters, this keyword
- *
- * Member 2 owns this class.
- */
+//Booking — stores one waste-collection pickup booking.
+
 public class Booking {
 
-    // Topic 1: private fields with encapsulation
+    // private fields with encapsulation
     private String bookingId;
     private String residentId;
     private String residentName;
@@ -24,7 +18,6 @@ public class Booking {
     /**
      * Constructor initialises all fields.
      * Status defaults to "Pending", points to 0.
-     * Topic 1 — constructor with this keyword
      */
     public Booking(String bookingId, String residentId, String residentName,
                    String date, String timeSlot, String wasteCategory,
