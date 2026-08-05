@@ -1,11 +1,6 @@
 package data;
 
-/**
- * Session — static holder for the currently logged-in user.
- *
- * Lecture reference: Topic 1 — static variables and methods
- * All members use this class to know who is logged in.
- */
+//Session — static holder for the currently logged-in user.
 public class Session {
 
     // Topic 1: static field shared across all references
