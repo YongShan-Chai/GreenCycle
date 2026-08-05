@@ -15,11 +15,7 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 /**
- * ManageResidentsPage — MEMBER 1's admin resident management screen.
- *
- * Lecture reference:
- *   Topic 2 — extends BasePage, @Override build(), uses super() constructor
- *   Topic 7 — try-catch-finally, AppException caught and displayed
+ * Admin resident management screen.
  *   Part 1  — VBox, HBox, GridPane, BorderPane (in dialog)
  *   Part 2  — Lambda event handlers for search, register, delete
  *   Part 4  — ListView, TextField, CheckBox, Button, Label
@@ -36,9 +32,7 @@ public class ManageResidentsPage extends BasePage {
     public ManageResidentsPage() { super(); }
     public ManageResidentsPage(Consumer<String> navigate) { super(navigate); }
 
-    /**
-     * Topic 2 — @Override: implements the abstract build() from BasePage.
-     */
+    //implements the abstract build() from BasePage.
     @Override
     public Node build() {
         // ── Page title ────────────────────────────────────────────────────────
@@ -169,12 +163,12 @@ public class ManageResidentsPage extends BasePage {
                     "No residents match: \"" + txtSearch.getText().trim() + "\"");
             }
         } catch (AppException e) {
-            // Topic 7 — catch AppException from validateNotEmpty
+            // catch AppException from validateNotEmpty
             showAlert(Alert.AlertType.WARNING, "Search", e.getMessage());
         }
     }
 
-    // ── Delete handler — Topic 7: try-catch ───────────────────────────────────
+    // ── Delete handler ───────────────────────────────────
     private void handleDelete() {
         try {
             Resident sel = getSelected();
