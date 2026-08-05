@@ -11,20 +11,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;  // JavaFX Part 3 — Shape
+import javafx.scene.shape.Circle;  
 import javafx.stage.Stage;
 import ui.pages.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * UserShell — main window shell for the Resident / User role.
- *
- * JavaFX Part 1 — BorderPane (root), VBox (sidebar), HBox (header), StackPane (avatar)
- * JavaFX Part 2 — Lambda event handlers for sidebar navigation and hover effects
- * JavaFX Part 3 — Circle and Color for avatar icon
- */
+//UserShell — main window shell for the Resident / User role.
 public class UserShell {
 
     private BorderPane        mainLayout;
