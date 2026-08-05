@@ -2,18 +2,10 @@ package data;
 
 import java.util.ArrayList;
 
-/**
- * Resident — a registered community resident.
- *
- * Lecture reference:
- *   Topic 1 — private fields, constructors, getters/setters
- *   Topic 2 — extends Person (inheritance), super(), @Override (polymorphism)
- *
- * Member 1 owns this class.
- */
+// Resident — a registered community resident.
+ 
 public class Resident extends Person {
 
-    // Topic 1: additional private fields (on top of Person's id, name)
     private String            unit;
     private String            phone;
     private ArrayList<String> wasteTypes;
@@ -21,22 +13,21 @@ public class Resident extends Person {
     /**
      * Constructor calls super() to initialise inherited fields,
      * then sets its own fields.
-     * Topic 2 — super() keyword for calling parent constructor
      */
     public Resident(String id, String name, String unit,
                     String phone, ArrayList<String> wasteTypes) {
-        super(id, name);          // Topic 2: call Person constructor
+        super(id, name);          
         this.unit       = unit;
         this.phone      = phone;
         this.wasteTypes = wasteTypes;
     }
 
-    // Topic 1: getters for Resident-specific fields
+    // getters for Resident-specific fields
     public String            getUnit()       { return unit; }
     public String            getPhone()      { return phone; }
     public ArrayList<String> getWasteTypes() { return wasteTypes; }
 
-    // Topic 1: setters
+    // setters
     public void setUnit(String unit)               { this.unit = unit; }
     public void setPhone(String phone)             { this.phone = phone; }
     public void setWasteTypes(ArrayList<String> w) { this.wasteTypes = w; }
@@ -52,7 +43,6 @@ public class Resident extends Person {
     }
 
     /**
-     * Topic 2 — @Override and Polymorphism:
      * Provides a Resident-specific summary string.
      * When getSummary() is called on a Person reference
      * pointing to a Resident object, THIS version runs (late binding).
@@ -65,10 +55,7 @@ public class Resident extends Person {
                " | " + getWasteTypesString();
     }
 
-    /**
-     * Returns a fixed-width formatted string for ListView display.
-     * Topic 4 — used by ListView to show resident records.
-     */
+    //Returns a fixed-width formatted string for ListView display.
     public String getListEntry() {
         return String.format("%-7s  %-22s  %-8s  %-14s  %s",
             getId(),
