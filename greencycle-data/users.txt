@@ -1,0 +1,5 @@
+# GreenCycle Users
+# Format: username,password,role,linkedResidentId
+admin,admin123,admin,null
+ahmad,pass123,user,R001
+siti,pass123,user,R002

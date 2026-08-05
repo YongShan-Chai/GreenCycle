@@ -1,0 +1,9 @@
+# GreenCycle Bookings
+# Format: bookingId,residentId,residentName,date,timeSlot,wasteCategory,collectionPoint,status,points
+BK001,R001,Ahmad Bin Ali,2026-06-10,Morning (8-10am),Recyclables,Block A Bay,Completed,20
+BK002,R001,Ahmad Bin Ali,2026-06-15,Afternoon (1-3pm),General Waste,Block A Bay,Completed,10
+BK003,R002,Siti Binti Rahmat,2026-06-18,Evening (5-7pm),General Waste,Main Gate,Completed,10
+BK004,R003,Chen Wei Ming,2026-06-20,Morning (8-10am),Recyclables,Block B Bay,Completed,20
+BK005,R003,Chen Wei Ming,2026-06-22,Afternoon (1-3pm),Recyclables,Block B Bay,Completed,20
+BK006,R001,Ahmad Bin Ali,2026-07-05,Morning (8-10am),Bulky Items,Block A Bay,Pending,0
+BK007,R002,Siti Binti Rahmat,2026-07-08,Evening (5-7pm),Recyclables,Main Gate,Completed,20

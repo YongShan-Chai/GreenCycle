@@ -1,0 +1,30 @@
+# Compiled Java files
+*.class
+
+# Eclipse build output
+/bin/
+
+# Command-line build output
+/out/
+
+# Temporary file created by compile scripts
+/sources.txt
+
+# Other common Java build folders
+/build/
+/target/
+
+# VS Code local project settings
+/.vscode/
+
+# Eclipse workspace metadata
+.metadata/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.log
+*.tmp
+*.bak
