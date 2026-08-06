@@ -31,7 +31,7 @@ public class LoginScreen {
     private Label          lblError;
 
     public void show(Stage stage) {
-        stage.setTitle("GreenCycle — Sign In");
+        stage.setTitle("GreenCycle - Sign In");
         stage.setResizable(true);
 
         // 1. Save maximized state before updating the scene
