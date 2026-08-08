@@ -47,7 +47,7 @@ public class RegisterScreen {
     private Label lblError;
 
     public void show(Stage stage) {
-        stage.setTitle("GreenCycle — Create Account");
+        stage.setTitle("GreenCycle - Create Account");
         stage.setResizable(true);
 
         // 1. Remember window maximized state BEFORE switching root/scene
