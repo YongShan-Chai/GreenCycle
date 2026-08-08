@@ -31,7 +31,7 @@ public class AdminShell {
 
     public void show(Stage stage) {
         
-        stage.setTitle("GreenCycle — Admin Panel");
+        stage.setTitle("GreenCycle - Admin Panel");
 
         // 1. Remember if the window was maximized on the Login screen
         boolean wasMaximized = stage.isMaximized();
