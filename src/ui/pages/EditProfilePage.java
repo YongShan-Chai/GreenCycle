@@ -177,6 +177,7 @@ public class EditProfilePage extends BasePage {
 
         // Part 4 — Buttons; Part 2 — Lambda event handlers
         Button btnSave   = makeBtn("Save Changes");
+        Button btnReset  = makeResetButton();
         Button btnCancel = makeSecBtn("Cancel");
 
         // Part 2 — Lambda: save button triggers handleSave()
@@ -185,7 +186,7 @@ public class EditProfilePage extends BasePage {
         // Part 2 — Lambda: cancel navigates back to dashboard
         btnCancel.setOnAction(e -> goTo("dashboard"));
 
-        HBox btnRow = new HBox(14, btnSave, btnCancel);
+        HBox btnRow = new HBox(14, btnSave, btnReset, btnCancel);
         btnRow.setAlignment(Pos.CENTER_LEFT);
 
         // Card wrapper using inherited makeCard() from BasePage
