@@ -15,7 +15,7 @@ import java.util.Arrays;
  *
  * CSV format (comma-separated fields):
  *   users.txt     : username,password,role,linkedResidentId
- *   residents.txt : id,name,unit,phone,wasteType1;wasteType2
+ *   residents.txt : id,name,unit,phone,wasteType1;wasteType2,remark
  *   bookings.txt  : bookingId,residentId,residentName,date,
  *                   timeSlot,wasteCategory,collectionPoint,status,points
  *
@@ -32,35 +32,26 @@ public class FileHandler {
     private static final String BOOKINGS_FILE  = DATA_DIR + "/bookings.txt";
 
     // ── Load all data from files (called in Main.java on app start) ───────────
-    /**
-     * Loads users, residents and bookings from text files into DataStore.
-     * If files do not exist (first run), creates them with sample data.
-     */
     public static void loadAll() {
-        // File class — check if data directory exists
         File dir = new File(DATA_DIR);
 
         if (!dir.exists()) {
-            // First run — create directory and populate with sample data
             dir.mkdir();
             insertSampleData();
             saveAll();
             return;
         }
 
-        // File class — check each individual file
         File usersFile     = new File(USERS_FILE);
         File residentsFile = new File(RESIDENTS_FILE);
         File bookingsFile  = new File(BOOKINGS_FILE);
 
         if (!usersFile.exists() || !residentsFile.exists() || !bookingsFile.exists()) {
-            // One or more files missing — recreate with sample data
             insertSampleData();
             saveAll();
             return;
         }
 
-        // All files exist — load them
         loadUsers();
         loadResidents();
         loadBookings();
@@ -72,12 +63,7 @@ public class FileHandler {
     }
 
     // ── Save all data to files (called in Main.java on app close) ─────────────
-    /**
-     * Writes all DataStore data to text files.
-     * Called when the user closes the application window.
-     */
     public static void saveAll() {
-        // Ensure directory exists before writing
         File dir = new File(DATA_DIR);
         if (!dir.exists()) dir.mkdir();
 
@@ -89,33 +75,24 @@ public class FileHandler {
     }
 
     // ── Load users from users.txt ─────────────────────────────────────────────
-    /**
-     * Reads users.txt line by line using BufferedReader.
-     * Lines starting with # are comments and are skipped.
-     */
     private static void loadUsers() {
         DataStore.users.clear();
         BufferedReader reader = null;
 
         try {
-            // File class lecture — FileReader wraps the File path
             reader = new BufferedReader(new FileReader(USERS_FILE));
             String line;
 
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
-
-                // Skip empty lines and comment lines
                 if (line.isEmpty() || line.startsWith("#")) continue;
 
-                // Split by comma — limit -1 keeps trailing empty fields
                 String[] parts = line.split(",", -1);
-                if (parts.length < 4) continue;  // skip malformed lines
+                if (parts.length < 4) continue;
 
                 String username         = parts[0].trim();
                 String password         = parts[1].trim();
                 String role             = parts[2].trim();
-                // "null" literal → actual null for linkedResidentId
                 String linkedResidentId = "null".equals(parts[3].trim())
                     ? null : parts[3].trim();
 
@@ -124,13 +101,9 @@ public class FileHandler {
             }
 
         } catch (IOException e) {
-            System.out.println("FileHandler: Error reading users.txt — " +
-                e.getMessage());
-
+            System.out.println("FileHandler: Error reading users.txt — " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("FileHandler: Unexpected error loading users — " +
-                e.getMessage());
-
+            System.out.println("FileHandler: Unexpected error loading users — " + e.getMessage());
         } finally {
             if (reader != null) {
                 try { reader.close(); }
@@ -142,10 +115,6 @@ public class FileHandler {
     }
 
     // ── Load residents from residents.txt ─────────────────────────────────────
-    /**
-     * Reads residents.txt line by line.
-     * Waste types field uses semicolon separator (e.g. "Paper;Plastic").
-     */
     private static void loadResidents() {
         DataStore.residents.clear();
         BufferedReader reader = null;
@@ -171,18 +140,26 @@ public class FileHandler {
                 ArrayList<String> wasteTypes = new ArrayList<String>(
                     Arrays.asList(types));
 
+                // Read remark if present (safely rejoins if remark has commas)
+                String remark = "";
+                if (parts.length >= 6) {
+                    StringBuilder sbRemark = new StringBuilder();
+                    for (int i = 5; i < parts.length; i++) {
+                        if (i > 5) sbRemark.append(",");
+                        sbRemark.append(parts[i]);
+                    }
+                    remark = sbRemark.toString().trim();
+                    if ("null".equalsIgnoreCase(remark)) remark = "";
+                }
+
                 DataStore.residents.add(
-                    new Resident(id, name, unit, phone, wasteTypes));
+                    new Resident(id, name, unit, phone, wasteTypes, remark));
             }
 
         } catch (IOException e) {
-            System.out.println("FileHandler: Error reading residents.txt — " +
-                e.getMessage());
-
+            System.out.println("FileHandler: Error reading residents.txt — " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("FileHandler: Unexpected error loading residents — " +
-                e.getMessage());
-
+            System.out.println("FileHandler: Unexpected error loading residents — " + e.getMessage());
         } finally {
             if (reader != null) {
                 try { reader.close(); }
@@ -194,10 +171,6 @@ public class FileHandler {
     }
 
     // ── Load bookings from bookings.txt ───────────────────────────────────────
-    /**
-     * Reads bookings.txt line by line.
-     * Also restores the booking counter so new IDs continue from the last one.
-     */
     private static void loadBookings() {
         DataStore.bookings.clear();
         int maxCounter = 0;
@@ -232,27 +205,18 @@ public class FileHandler {
                 b.setPoints(points);
                 DataStore.bookings.add(b);
 
-                // Track highest booking number to restore counter correctly
                 try {
                     int num = Integer.parseInt(bookingId.replace("BK", ""));
                     if (num > maxCounter) maxCounter = num;
-                } catch (NumberFormatException ignore) {
-                    // Non-standard ID format — skip counter tracking
-                }
+                } catch (NumberFormatException ignore) {}
             }
 
         } catch (IOException e) {
-            System.out.println("FileHandler: Error reading bookings.txt — " +
-                e.getMessage());
-
+            System.out.println("FileHandler: Error reading bookings.txt — " + e.getMessage());
         } catch (NumberFormatException e) {
-            System.out.println("FileHandler: Invalid number in bookings.txt — " +
-                e.getMessage());
-
+            System.out.println("FileHandler: Invalid number in bookings.txt — " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("FileHandler: Unexpected error loading bookings — " +
-                e.getMessage());
-
+            System.out.println("FileHandler: Unexpected error loading bookings — " + e.getMessage());
         } finally {
             if (reader != null) {
                 try { reader.close(); }
@@ -262,23 +226,17 @@ public class FileHandler {
             }
         }
 
-        // Restore booking counter so next booking continues from correct number
         DataStore.setBookingCounter(maxCounter + 1);
     }
 
     // ── Save users to users.txt ───────────────────────────────────────────────
-    /**
-     * Writes all users to users.txt using PrintWriter and BufferedWriter.
-     */
     private static void saveUsers() {
         PrintWriter writer = null;
 
         try {
-            // File class lecture — FileWriter creates/overwrites the file
             writer = new PrintWriter(
                 new BufferedWriter(new FileWriter(USERS_FILE)));
 
-            // Write a comment header line
             writer.println("# GreenCycle Users");
             writer.println("# Format: username,password,role,linkedResidentId");
 
@@ -293,19 +251,13 @@ public class FileHandler {
             }
 
         } catch (IOException e) {
-            System.out.println("FileHandler: Error saving users.txt — " +
-                e.getMessage());
-
+            System.out.println("FileHandler: Error saving users.txt — " + e.getMessage());
         } finally {
             if (writer != null) writer.close();
         }
     }
 
     // ── Save residents to residents.txt ───────────────────────────────────────
-    /**
-     * Writes all residents to residents.txt.
-     * Waste types joined with semicolon separator.
-     */
     private static void saveResidents() {
         PrintWriter writer = null;
 
@@ -314,10 +266,9 @@ public class FileHandler {
                 new BufferedWriter(new FileWriter(RESIDENTS_FILE)));
 
             writer.println("# GreenCycle Residents");
-            writer.println("# Format: id,name,unit,phone,wasteTypes(semicolon-separated)");
+            writer.println("# Format: id,name,unit,phone,wasteTypes(semicolon-separated),remark");
 
             for (Resident r : DataStore.residents) {
-                // Join waste types with semicolon
                 ArrayList<String> types = r.getWasteTypes();
                 StringBuilder wt = new StringBuilder();
                 for (int i = 0; i < types.size(); i++) {
@@ -325,28 +276,26 @@ public class FileHandler {
                     wt.append(types.get(i));
                 }
 
+                String remark = r.getRemark() != null ? r.getRemark() : "";
+
                 writer.println(
                     r.getId()    + "," +
                     r.getName()  + "," +
                     r.getUnit()  + "," +
                     r.getPhone() + "," +
-                    wt.toString()
+                    wt.toString() + "," +
+                    remark
                 );
             }
 
         } catch (IOException e) {
-            System.out.println("FileHandler: Error saving residents.txt — " +
-                e.getMessage());
-
+            System.out.println("FileHandler: Error saving residents.txt — " + e.getMessage());
         } finally {
             if (writer != null) writer.close();
         }
     }
 
     // ── Save bookings to bookings.txt ─────────────────────────────────────────
-    /**
-     * Writes all bookings to bookings.txt.
-     */
     private static void saveBookings() {
         PrintWriter writer = null;
 
@@ -373,42 +322,33 @@ public class FileHandler {
             }
 
         } catch (IOException e) {
-            System.out.println("FileHandler: Error saving bookings.txt — " +
-                e.getMessage());
-
+            System.out.println("FileHandler: Error saving bookings.txt — " + e.getMessage());
         } finally {
             if (writer != null) writer.close();
         }
     }
 
     // ── Sample data for first run ─────────────────────────────────────────────
-    /**
-     * Populates DataStore with sample data when the app runs for the first time
-     * and no data files exist yet. After this, saveAll() writes them to files.
-     */
     private static void insertSampleData() {
         DataStore.users.clear();
         DataStore.residents.clear();
         DataStore.bookings.clear();
 
-        // Sample user accounts
         DataStore.users.add(new User("admin", "admin123", "admin", null));
         DataStore.users.add(new User("ahmad", "pass123",  "user",  "R001"));
         DataStore.users.add(new User("siti",  "pass123",  "user",  "R002"));
         DataStore.users.add(new User("chen",  "pass123",  "user",  "R003"));
 
-        // Sample residents (uses inheritance — Resident extends Person)
         DataStore.residents.add(new Resident("R001", "Ahmad Bin Ali",
             "A-12", "0123456789",
-            new ArrayList<String>(Arrays.asList("Paper", "Plastic"))));
+            new ArrayList<String>(Arrays.asList("Paper", "Plastic")), ""));
         DataStore.residents.add(new Resident("R002", "Siti Binti Rahmat",
             "B-05", "0198765432",
-            new ArrayList<String>(Arrays.asList("Glass", "E-Waste"))));
+            new ArrayList<String>(Arrays.asList("Glass", "E-Waste")), ""));
         DataStore.residents.add(new Resident("R003", "Chen Wei Ming",
             "C-08", "0112233445",
-            new ArrayList<String>(Arrays.asList("Paper", "Plastic", "Glass"))));
+            new ArrayList<String>(Arrays.asList("Paper", "Plastic", "Glass")), ""));
 
-        // Sample bookings
         Booking b1 = new Booking("BK001","R001","Ahmad Bin Ali",
             "2026-06-10","Morning (8-10am)","Recyclables","Block A Bay");
         b1.setStatus("Completed"); b1.setPoints(20);
