@@ -93,8 +93,8 @@ public class ManageBookingsAdminPage extends BasePage {
 
         // ── ListView — Part 4 ─────────────────────────────────────────────────
         Label lvHeader = makeListHeader(
-            String.format("  %-7s  %-18s  %-11s  %-18s  %-13s  %-10s  %s",
-                "ID", "Resident", "Date", "Time Slot", "Category", "Status", "Pts"));
+            String.format(" %-7s  %-18s  %-11s  %-18s  %-13s  %-12s  %-8s  %4s ",
+                "ID", "Resident", "Date", "Time Slot", "Category", "Location", "Status", "Points"));
 
         lvBookings = makeListView(400);
         lblCount = new Label();
