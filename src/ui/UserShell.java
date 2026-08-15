@@ -174,6 +174,9 @@ public class UserShell {
         } else if ("book".equals(pageId)) {
             lblPageTitle.setText("Book a Pickup");
             page = new BookPickupPage(this::navigateTo).build();
+        } else if ("bookings".equals(pageId)) {
+            lblPageTitle.setText("My Bookings");
+            page = new MyBookingsPage(this::navigateTo).build();
         } else if ("points".equals(pageId)) {
             lblPageTitle.setText("My Points & History");
             page = new MyPointsPage(this::navigateTo).build();
