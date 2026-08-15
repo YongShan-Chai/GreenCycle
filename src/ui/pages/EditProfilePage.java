@@ -294,4 +294,38 @@ public class EditProfilePage extends BasePage {
         }
         return sb.toString();
     }
+
+    // ── Reset button ──────────────────────────────────────────────────────────────
+private Button makeResetButton() {
+    Button btn = new Button("Reset");
+    btn.setStyle(StyleHelper.btnGhost());
+    btn.setOnMouseEntered(e -> btn.setStyle(
+        "-fx-background-color:" + StyleHelper.BORDER + ";" +
+        "-fx-text-fill:" + StyleHelper.TEXT_DARK + ";" +
+        "-fx-background-radius:25;-fx-padding:10 26 10 26;" +
+        "-fx-font-size:13px;-fx-cursor:hand;"));
+    btn.setOnMouseExited(e -> btn.setStyle(StyleHelper.btnGhost()));
+    btn.setOnAction(e -> resetForm());
+    return btn;
+}
+
+    // ── Reset form ─────────────────────────────────────────────────────────────────
+    private void resetForm() {
+        String resId = Session.getLinkedResidentId();
+        Resident me = resId != null ? DataStore.findResidentById(resId) : null;
+        if (me == null) return;
+    
+        txtName.setText(me.getName());
+        txtUnit.setText(me.getUnit());
+        txtPhone.setText(me.getPhone());
+    
+        ArrayList<String> currentTypes = me.getWasteTypes();
+        cbPaper.setSelected(currentTypes.contains("Paper"));
+        cbPlastic.setSelected(currentTypes.contains("Plastic"));
+        cbGlass.setSelected(currentTypes.contains("Glass"));
+        cbEWaste.setSelected(currentTypes.contains("E-Waste"));
+    
+        lblFeedback.setText("");
+        lblFeedback.setStyle(StyleHelper.mutedLabel());
+    }
 }
