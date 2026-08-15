@@ -192,13 +192,21 @@ public class UserDashboardPage extends BasePage {
 
         // Progress bar
         double pct = Math.min(pts / 100.0, 1.0);
-        Region filled = new Region(); filled.setPrefHeight(10);
-        filled.setPrefWidth(pct * 500);
+        Region filled = new Region(); 
+        filled.setPrefHeight(10);
         filled.setStyle("-fx-background-color:" + tierColor + ";-fx-background-radius:8 0 0 8;");
-        Region empty = new Region(); empty.setPrefHeight(10);
+        
+        Region empty = new Region(); 
+        empty.setPrefHeight(10);
+
         HBox.setHgrow(empty, Priority.ALWAYS);
         empty.setStyle("-fx-background-color:" + StyleHelper.BORDER + ";-fx-background-radius:0 8 8 0;");
         HBox bar = new HBox(0, filled, empty);
+
+        // Dynamically bind filled width to match the percentage of the total bar width
+        filled.prefWidthProperty().bind(bar.widthProperty().multiply(pct));
+        // Prevent HBox from shrinking the filled region below its calculated preferred width
+        filled.setMinWidth(Region.USE_PREF_SIZE);
 
         // Part 1 — HBox for milestone labels
         Label lS = new Label("Starter\n0 pts");   lS.setStyle(StyleHelper.mutedLabel());
