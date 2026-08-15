@@ -57,22 +57,7 @@ public class CommunitySummaryPage extends BasePage {
             if (e.getValue() > topCount) { topCount = e.getValue(); topCat = e.getKey(); }
         }
 
-        /* 
-        // ── Stat cards — Part 1: HBox rows ───────────────────────────────────
-        HBox row1 = new HBox(14,
-            statCard("Total Residents",    String.valueOf(totalResidents), StyleHelper.PRIMARY,  "#EAF5F0"),
-            statCard("Total Bookings",     String.valueOf(totalBookings),  StyleHelper.INFO,     "#EFF6FF"),
-            statCard("Community Points",   totalPts + " pts",          "#6D28D9",           "#F5F3FF")
-        );
-        HBox row2 = new HBox(14,
-            statCard("Pending Pickups",    String.valueOf(pending),    StyleHelper.WARNING, "#FFFBEB"),
-            statCard("Completed Pickups",  String.valueOf(completed),      StyleHelper.SUCCESS,  "#F0FDF4"),
-            statCard("Cancelled",          String.valueOf(cancelled),  StyleHelper.DANGER,  "#FFF1F2")
-        );
-        for (Node n : row1.getChildren()) HBox.setHgrow(n, Priority.ALWAYS);
-        for (Node n : row2.getChildren()) HBox.setHgrow(n, Priority.ALWAYS);
-        */
-        
+        // ── Stat cards — Part 1: GridPane ───────────────────────────────────
         GridPane statsGrid = new GridPane();
         statsGrid.setHgap(14);
         statsGrid.setVgap(14);
