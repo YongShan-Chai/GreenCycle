@@ -27,7 +27,7 @@ public class UserShell {
     private Map<String, HBox> menuItemMap = new HashMap<String, HBox>();
 
     public void show(Stage stage) {
-        stage.setTitle("GreenCycle — Resident Portal");
+        stage.setTitle("GreenCycle - Resident Portal");
         
         // 1. Remember if the window was maximized on the Login screen
         boolean wasMaximized = stage.isMaximized();
