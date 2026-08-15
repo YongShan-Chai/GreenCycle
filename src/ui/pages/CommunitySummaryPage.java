@@ -57,19 +57,43 @@ public class CommunitySummaryPage extends BasePage {
             if (e.getValue() > topCount) { topCount = e.getValue(); topCat = e.getKey(); }
         }
 
+        /* 
         // ── Stat cards — Part 1: HBox rows ───────────────────────────────────
         HBox row1 = new HBox(14,
             statCard("Total Residents",    String.valueOf(totalResidents), StyleHelper.PRIMARY,  "#EAF5F0"),
             statCard("Total Bookings",     String.valueOf(totalBookings),  StyleHelper.INFO,     "#EFF6FF"),
-            statCard("Completed Pickups",  String.valueOf(completed),      StyleHelper.SUCCESS,  "#F0FDF4")
+            statCard("Community Points",   totalPts + " pts",          "#6D28D9",           "#F5F3FF")
         );
         HBox row2 = new HBox(14,
             statCard("Pending Pickups",    String.valueOf(pending),    StyleHelper.WARNING, "#FFFBEB"),
-            statCard("Cancelled",          String.valueOf(cancelled),  StyleHelper.DANGER,  "#FFF1F2"),
-            statCard("Community Points",   totalPts + " pts",          "#6D28D9",           "#F5F3FF")
+            statCard("Completed Pickups",  String.valueOf(completed),      StyleHelper.SUCCESS,  "#F0FDF4"),
+            statCard("Cancelled",          String.valueOf(cancelled),  StyleHelper.DANGER,  "#FFF1F2")
         );
         for (Node n : row1.getChildren()) HBox.setHgrow(n, Priority.ALWAYS);
         for (Node n : row2.getChildren()) HBox.setHgrow(n, Priority.ALWAYS);
+        */
+        
+        GridPane statsGrid = new GridPane();
+        statsGrid.setHgap(14);
+        statsGrid.setVgap(14);
+
+        //Preset each column to 1/3 width of the grid, and allow it to grow with the window
+        for (int i = 0; i < 3; i++) {
+            ColumnConstraints col = new ColumnConstraints();
+            col.setPercentWidth(100.0 / 3);
+            col.setHgrow(Priority.ALWAYS);
+            statsGrid.getColumnConstraints().add(col);
+        }
+
+        // Row 0
+        statsGrid.add(statCard("Total Residents",   String.valueOf(totalResidents), StyleHelper.PRIMARY, "#EAF5F0"), 0, 0);
+        statsGrid.add(statCard("Total Bookings",    String.valueOf(totalBookings),  StyleHelper.INFO,    "#EFF6FF"), 1, 0);
+        statsGrid.add(statCard("Community Points",  totalPts + " pts",              "#6D28D9",           "#F5F3FF"), 2, 0);
+
+        // Row 1
+        statsGrid.add(statCard("Pending Pickups",   String.valueOf(pending),        StyleHelper.WARNING, "#FFFBEB"), 0, 1);
+        statsGrid.add(statCard("Completed Pickups", String.valueOf(completed),      StyleHelper.SUCCESS, "#F0FDF4"), 1, 1);
+        statsGrid.add(statCard("Cancelled",         String.valueOf(cancelled),      StyleHelper.DANGER,  "#FFF1F2"), 2, 1);
 
         // ── Most popular category highlight ───────────────────────────────────
         Label topCatLbl = new Label("Most Popular Waste Category");
@@ -140,7 +164,7 @@ public class CommunitySummaryPage extends BasePage {
         // ── Root ──────────────────────────────────────────────────────────────
         VBox root = new VBox(24,
             titleBox,
-            new VBox(14, row1, row2),
+            statsGrid,
             topCatCard,
             new VBox(14, lblCatTitle, catCard),
             new VBox(14, lblLeader, leaderCard)
@@ -162,6 +186,10 @@ public class CommunitySummaryPage extends BasePage {
         VBox inner = new VBox(8, lbl, val);
         inner.setPadding(new Insets(18, 20, 18, 20));
         VBox card = new VBox(0, bar, inner);
+        
+        // Ensure card in the same ratio of width and height, and grows nicely in HBox
+        card.setMaxWidth(Double.MAX_VALUE);
+        card.setPrefWidth(0);
         card.setStyle("-fx-background-color:white;-fx-background-radius:14;-fx-border-radius:14;" +
             "-fx-border-color:" + StyleHelper.BORDER + ";-fx-border-width:1;" +
             "-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),12,0,0,3);");
