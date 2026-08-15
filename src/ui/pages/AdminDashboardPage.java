@@ -81,20 +81,20 @@ public class AdminDashboardPage extends BasePage {
 
         // Column header above the ListView
         Label lvHeader = makeListHeader(
-            String.format("  %-7s  %-18s  %-11s  %-18s  %-13s  %s",
-                "ID", "Resident", "Date", "Time Slot", "Category", "Status"));
+            String.format(" %-7s  %-18s  %-11s  %-18s  %-13s  %-12s  %-8s  %4s ",
+                "ID", "Resident", "Date", "Time Slot", "Category", "Location", "Status", "Points"));
 
         // Part 4 — ListView showing recent bookings
-        ListView<String> lvRecent = makeListView(200);
+        ListView<String> lvRecent = makeListView(210);
         
         // ── FIXES FOR TABLE VISIBILITY ───────────────────────────────────────
         lvRecent.setMinHeight(180);                  // Forces a minimum height so it won't collapse
-        lvRecent.setPrefHeight(200);
+        lvRecent.setPrefHeight(210);
         VBox.setVgrow(lvRecent, Priority.ALWAYS);     // Allows it to grow in VBox
         lvRecent.setStyle("-fx-font-family:'Courier New', monospace;-fx-font-size:12px;"); // Ensures clean alignment
         // ─────────────────────────────────────────────────────────────────────
 
-        int start = Math.max(0, DataStore.bookings.size() - 5);
+        int start = Math.max(0, DataStore.bookings.size() - 10);
         for (int i = DataStore.bookings.size() - 1; i >= start; i--) {
             lvRecent.getItems().add(DataStore.bookings.get(i).getListEntry());
         }

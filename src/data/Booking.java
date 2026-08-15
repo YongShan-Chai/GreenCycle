@@ -51,13 +51,14 @@ public class Booking {
     //Returns a formatted string for ListView display.
 
     public String getListEntry() {
-        String ptsStr = points > 0 ? " (" + points + " pts)" : "";
-        return String.format("%-7s  %-18s  %-11s  %-18s  %-13s  %s%s",
+        String ptsStr = points > 0 ? points + " pts" : "";
+        return String.format("%-7s  %-18s  %-11s  %-18s  %-13s  %-13s  %-5s  %s",
             bookingId,
             truncate(residentName, 18),
             date,
             truncate(timeSlot, 18),
             truncate(wasteCategory, 13),
+            truncate(collectionPoint, 15),
             status,
             ptsStr);
     }
