@@ -208,13 +208,19 @@ public class UserDashboardPage extends BasePage {
         // Prevent HBox from shrinking the filled region below its calculated preferred width
         filled.setMinWidth(Region.USE_PREF_SIZE);
 
-        // Part 1 — HBox for milestone labels
+        // Part 1 — Milestone labels
+        Pane milestones = new Pane();
+        milestones.setPrefHeight(36);
+        milestones.setMinHeight(36);
+
         Label lS = new Label("Starter\n0 pts");   lS.setStyle(StyleHelper.mutedLabel());
         Label lR = new Label("Recycler\n40 pts"); lR.setStyle(StyleHelper.mutedLabel());
         Label lC = new Label("Eco Champion\n100 pts"); lC.setStyle(StyleHelper.mutedLabel());
-        Region s1 = new Region(); HBox.setHgrow(s1, Priority.ALWAYS);
-        Region s2 = new Region(); HBox.setHgrow(s2, Priority.ALWAYS);
-        HBox milestones = new HBox(lS, s1, lR, s2, lC);
+
+        milestones.getChildren().addAll(lS, lR, lC);
+        lS.layoutXProperty().bind(milestones.layoutXProperty());
+        lR.layoutXProperty().bind(milestones.widthProperty().multiply(0.40).subtract(lR.widthProperty().divide(2)));
+        lC.layoutXProperty().bind(milestones.widthProperty().subtract(lC.widthProperty()));
 
         VBox card = makeCard(14);
         card.getChildren().addAll(lbl, new HBox(14, tierName, lblNext), bar, milestones);
