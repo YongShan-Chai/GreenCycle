@@ -47,7 +47,7 @@ public class RegisterScreen {
     private Label lblError;
 
     public void show(Stage stage) {
-        stage.setTitle("GreenCycle — Create Account");
+        stage.setTitle("GreenCycle - Create Account");
         stage.setResizable(true);
 
         // 1. Remember window maximized state BEFORE switching root/scene
@@ -85,7 +85,10 @@ public class RegisterScreen {
         btnBack.setOnMouseExited(e  -> btnBack.setStyle(StyleHelper.btnSecondary()));
         btnBack.setOnAction(e -> new LoginScreen().show(stage));
 
-        HBox btnRow = new HBox(14, btnCreate, btnBack);
+        Button btnClear = makeClearButton();
+        btnClear.setOnAction(e -> clearForm());
+        
+        HBox btnRow = new HBox(14, btnCreate, btnClear, btnBack);
         btnRow.setAlignment(Pos.CENTER_LEFT);
 
         // JavaFX Part 1 — VBox layout for page content
@@ -254,6 +257,36 @@ public class RegisterScreen {
             lblError.setVisible(true);
         }
     }
+
+// ── Clear button ───────────────────────────────────────────────────────────────
+    private Button makeClearButton() {
+        Button btn = new Button("Clear");
+        btn.setStyle(StyleHelper.btnGhost());
+        btn.setOnMouseEntered(e -> btn.setStyle(
+            "-fx-background-color:" + StyleHelper.BORDER + ";" +
+            "-fx-text-fill:" + StyleHelper.TEXT_DARK + ";" +
+            "-fx-background-radius:25;-fx-padding:10 26 10 26;" +
+            "-fx-font-size:13px;-fx-cursor:hand;"));
+        btn.setOnMouseExited(e -> btn.setStyle(StyleHelper.btnGhost()));
+        return btn;
+    }
+    
+    // ── Clear form ─────────────────────────────────────────────────────────────────
+    private void clearForm() {
+        txtUsername.clear();
+        txtPassword.clear();
+        txtConfirm.clear();
+        txtResidentId.clear();
+        txtName.clear();
+        txtUnit.clear();
+        txtPhone.clear();
+        cbPaper.setSelected(false);
+        cbPlastic.setSelected(false);
+        cbGlass.setSelected(false);
+        cbEWaste.setSelected(false);
+        lblError.setText("");
+    }
+        
 
     // ── UI helpers ────────────────────────────────────────────────────────────
     private VBox buildSectionCard(String title, GridPane form) {
