@@ -239,8 +239,14 @@ public class RegisterScreen {
             lblError.setText(e.getMessage());
 
         } catch (Exception e) {
-            // catch any other unexpected exceptions
-            lblError.setText("An unexpected error occurred: " + e.getMessage());
+            // Log unexpected errors to the console for debugging.
+            System.out.println("Critical Error in Registration: ");
+            e.printStackTrace();    
+
+            // Display an error to the user if something unexpected happens.
+            lblError.setText(
+            "An unexpected error occurred. Please restart the application and try again."
+            );
 
         } finally {
             // finally block: always runs regardless of exception

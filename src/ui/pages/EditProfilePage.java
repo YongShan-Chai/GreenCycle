@@ -219,7 +219,7 @@ public class EditProfilePage extends BasePage {
             String phone = txtPhone.getText().trim();
 
             // Topic 7 — DataStore validation methods throw AppException
-            DataStore.validateNotEmpty(name,  "Full Name");
+            DataStore.validateName(name);
             DataStore.validateNotEmpty(unit,  "Unit / Block");
             DataStore.validatePhone(phone);
 
