@@ -3,3 +3,4 @@
 admin,admin123,admin,null
 ahmad,pass123,user,R001
 siti,pass123,user,R002
+chen,pass123,user,R003
