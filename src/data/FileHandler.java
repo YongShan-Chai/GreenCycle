@@ -155,7 +155,8 @@ public class FileHandler {
                 DataStore.residents.add(
                     new Resident(id, name, unit, phone, wasteTypes, remark));
             }
-
+            DataStore.initResidentCounter();
+            
         } catch (IOException e) {
             System.out.println("FileHandler: Error reading residents.txt — " + e.getMessage());
         } catch (Exception e) {

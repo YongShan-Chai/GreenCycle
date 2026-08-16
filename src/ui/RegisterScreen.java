@@ -147,8 +147,14 @@ public class RegisterScreen {
 
     // ── Resident information form ─────────────────────────────────────────────
     private GridPane buildResidentGrid() {
-        txtResidentId = styledField("e.g. R004");
-        txtName       = styledField("Your full name");
+        String previewId = String.format("R%03d", DataStore.nextResidentIdNumber);
+        txtResidentId = new TextField(previewId);
+        txtResidentId.setEditable(false);
+        txtResidentId.setPrefWidth(300);
+        txtResidentId.setStyle("-fx-background-color: #E5E7EB; -fx-border-color: #D1D5DB; -fx-border-radius: 8;"+
+         "-fx-background-radius: 8; -fx-padding: 10 14 10 14; -fx-font-size: 13px; -fx-text-fill: #6B7280;");
+        
+        txtName       = styledField("At least 3 characters and no numbers");
         txtUnit       = styledField("e.g. D-07");
         txtPhone      = styledField("10 or 11 digit number");
 
@@ -190,12 +196,12 @@ public class RegisterScreen {
             DataStore.validatePassword(password, confirm); // throws AppException
 
             // ── Resident validation ───────────────────────────────────────────
-            String id    = txtResidentId.getText().trim();
+            String autoId = DataStore.generateResidentId();
             String name  = txtName.getText().trim();
             String unit  = txtUnit.getText().trim();
             String phone = txtPhone.getText().trim();
 
-            DataStore.validateResidentId(id);           // throws AppException
+            DataStore.validateResidentId(autoId);           // throws AppException
             DataStore.validateNotEmpty(name,  "Full Name");
             DataStore.validateNotEmpty(unit,  "Unit / Block");
             DataStore.validatePhone(phone);             // throws AppException
@@ -212,8 +218,8 @@ public class RegisterScreen {
             }
 
             // ── All validation passed: save records ───────────────────────────
-            DataStore.residents.add(new Resident(id, name, unit, phone, wasteTypes));
-            DataStore.users.add(new User(username, password, "user", id));
+            DataStore.residents.add(new Resident(autoId, name, unit, phone, wasteTypes));
+            DataStore.users.add(new User(username, password, "user", autoId));
 
             // show success message
             Alert ok = new Alert(Alert.AlertType.INFORMATION);
@@ -222,7 +228,7 @@ public class RegisterScreen {
             ok.setContentText(
                 "Account created successfully!\n\n" +
                 "Username    : " + username + "\n" +
-                "Resident ID : " + id + "\n\n" +
+                "Resident ID : " + autoId + "\n\n" +
                 "You can now sign in with your new account.");
             ok.showAndWait();
 
