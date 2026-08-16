@@ -17,7 +17,7 @@ public class DataStore {
     public static ArrayList<Booking>  bookings  = new ArrayList<Booking>();
 
     private static int bookingCounter = 1;
-
+    public static int nextResidentIdNumber = 1;
     // ── Lookup helpers ────────────────────────────────────────────────────────
 
     /** Finds a User by username + password. Returns null if not matched. */
@@ -29,6 +29,29 @@ public class DataStore {
             }
         }
         return null;
+    }
+
+    /** Generates a new Resident ID. */
+    public static String generateResidentId() {
+        return String.format("R%03d", nextResidentIdNumber++);
+    }
+
+    /** Initializes the resident ID counter based on existing residents. */
+    public static void initResidentCounter() {
+        int maxId = 0;
+        for (Resident r : residents) {
+            if (r.getId() != null && r.getId().startsWith("R")) {
+                try {
+                    int currentNum = Integer.parseInt(r.getId().substring(1));
+                    if (currentNum > maxId) {
+                        maxId = currentNum;
+                    }
+                } catch (Exception e) {
+                    // Ignore IDs that don't match the expected format
+                }
+            }
+        }
+        nextResidentIdNumber = maxId + 1;
     }
 
     /** Finds a Resident by ID (case-insensitive). Returns null if not found. */
@@ -116,6 +139,17 @@ public class DataStore {
         if (isResidentIdTaken(id)) {
             throw new AppException("Resident ID \"" + id.trim() +
                     "\" is already taken. Please use a different ID.");
+        }
+    }
+
+    //Validates a full name — must be non-empty，at least 3 characters and only letters/spaces.
+    public static void validateName(String name) throws AppException {
+        validateNotEmpty(name, "Full Name");
+        if (name.trim().length() < 3) {
+            throw new AppException("Full Name must be at least 3 characters long.");
+        }
+        if (!name.trim().matches("^[a-zA-Z\\s]+$")) {
+            throw new AppException("Full Name can only contain letters and spaces.");
         }
     }
 

@@ -229,9 +229,13 @@ private void handleLogin(Stage stage) {
         lblError.setText(e.getMessage());
 
     } catch (Exception e) {
-        // Display an error if something unexpected happens.
+        // Log unexpected errors to the console for debugging.
+        System.out.println("Critical Error in Login: ");
+        e.printStackTrace();
+
+        // Display an error to the user if something unexpected happens.
         lblError.setText(
-            "Unexpected error: " + e.getMessage()
+            "An unexpected error occurred. Please restart the application and try again."
         );
     }
 }
