@@ -204,8 +204,8 @@ public class RegisterScreen {
             String unit  = txtUnit.getText().trim();
             String phone = txtPhone.getText().trim();
 
-            DataStore.validateResidentId(autoId);           // throws AppException
-            DataStore.validateNotEmpty(name,  "Full Name");
+            DataStore.validateResidentId(autoId);       // throws AppException
+            DataStore.validateName(name);               // throws AppException
             DataStore.validateNotEmpty(unit,  "Unit / Block");
             DataStore.validatePhone(phone);             // throws AppException
 
