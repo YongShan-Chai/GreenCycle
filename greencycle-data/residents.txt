@@ -2,3 +2,4 @@
 # Format: id,name,unit,phone,wasteTypes(semicolon-separated),remark
 R001,Ahmad Bin Ali,A-12,0123456789,Paper;Plastic,
 R002,Siti Binti Rahmat,B-05,0198765432,Glass;E-Waste,
+R003,Chen Wei Ming,C-08,0112233445,Paper;Plastic;Glass,,
