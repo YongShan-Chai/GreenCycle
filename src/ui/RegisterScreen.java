@@ -196,7 +196,7 @@ public class RegisterScreen {
             String phone = txtPhone.getText().trim();
 
             DataStore.validateResidentId(id);           // throws AppException
-            DataStore.validateNotEmpty(name,  "Full Name");
+            DataStore.validateName(name);               // throws AppException
             DataStore.validateNotEmpty(unit,  "Unit / Block");
             DataStore.validatePhone(phone);             // throws AppException
 

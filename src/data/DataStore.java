@@ -119,6 +119,17 @@ public class DataStore {
         }
     }
 
+    //Validates a full name — must be non-empty，at least 3 characters and only letters/spaces.
+    public static void validateName(String name) throws AppException {
+        validateNotEmpty(name, "Full Name");
+        if (name.trim().length() < 3) {
+            throw new AppException("Full Name must be at least 3 characters long.");
+        }
+        if (!name.trim().matches("^[a-zA-Z\\s]+$")) {
+            throw new AppException("Full Name can only contain letters and spaces.");
+        }
+    }
+
     //Validates a phone number — must be 10 or 11 digits.
     public static void validatePhone(String phone) throws AppException {
         if (phone == null || phone.trim().isEmpty()) {
