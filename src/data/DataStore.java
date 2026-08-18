@@ -153,14 +153,17 @@ public class DataStore {
         }
     }
 
-    //Validates a phone number — must be 10 or 11 digits.
+    // Validates a Malaysian phone number — must start with 01 and be 10 or 11 digits.
     public static void validatePhone(String phone) throws AppException {
         if (phone == null || phone.trim().isEmpty()) {
             throw new AppException("Phone number cannot be empty.");
         }
-        if (!phone.trim().matches("\\d{10,11}")) {
+        
+        String cleanPhone = phone.trim();
+        // Checks: Must start with 01, followed by 8 digits (10-digit total) or 9 digits (11-digit total)
+        if (!cleanPhone.matches("^01\\d{8,9}$")) {
             throw new AppException(
-                "Phone number must be 10 or 11 digits (numbers only, no spaces or dashes).");
+                "Invalid phone number. Must start with '01' (numbers only, no spaces or dashes).");
         }
     }
 
