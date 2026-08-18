@@ -44,6 +44,9 @@ public class BookPickupPage extends BasePage {
     private ToggleGroup      wasteGroup;
     private Label            lblFeedback;
 
+    // Flag to prevent listeners from wiping feedback during programmatic resets
+    private boolean isResetting = false;
+
     // Standardized date formatter for consistent string parsing and data storage
     private static final DateTimeFormatter DATE_FMT =
         DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -188,7 +191,7 @@ public class BookPickupPage extends BasePage {
             
         // --- Added: clear feedback when user manually changes any form control ---
         javafx.beans.value.ChangeListener<String> stringListener = (obs, oldVal, newVal) -> {
-            if (lblFeedback != null && !lblFeedback.getText().isEmpty()) {
+            if (!isResetting && lblFeedback != null && !lblFeedback.getText().isEmpty()) {
                 lblFeedback.setText("");
             }
         };
@@ -200,7 +203,7 @@ public class BookPickupPage extends BasePage {
         cbLocation.valueProperty().addListener(stringListener);
 
         javafx.beans.value.ChangeListener<Boolean> boolListener = (obs, oldVal, newVal) -> {
-            if (newVal && lblFeedback != null && !lblFeedback.getText().isEmpty()) {
+            if (!isResetting && newVal && lblFeedback != null && !lblFeedback.getText().isEmpty()) {
                 lblFeedback.setText("");
             }
         };
@@ -343,16 +346,17 @@ public class BookPickupPage extends BasePage {
                 .getText().replace("  (+20 pts)", "");
             String bookingId = DataStore.generateBookingId();
             
-            // Persist newly instantiated booking object into shared centralized memory repository
+            // Persist newly instantiated booking object into shared centralized memory repository (Single entry point)
             DataStore.bookings.add(new Booking(
                 bookingId, resId, me.getName(), dateStr, timeSlot, category, cbLocation.getValue()));
             
-            // Display success notification feedback message
+            // Clear form controls safely using the reset flag
+            clearForm();
+
+            // Display success notification feedback message in the inline label
             lblFeedback.setStyle("-fx-text-fill:" + StyleHelper.SUCCESS +
                 ";-fx-font-size:13px;-fx-font-weight:bold;");
-            lblFeedback.setText("Booking confirmed!  " + bookingId +
-                "  |  " + dateStr + "  |  " + timeSlot + "  |  " + category);
-            clearForm();
+            lblFeedback.setText("✓ Booking confirmed successfully!");
 
         } catch (AppException e) {
             // Topic 7 — Catch block handling custom business validation exceptions thrown from model layer
@@ -380,6 +384,8 @@ public class BookPickupPage extends BasePage {
      * Clears and resets all interactive form input controls back to their default baseline states.
      */
     private void clearForm() {
+        isResetting = true; // Enable flag to prevent listeners from clearing feedback during reset
+
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         cbDay.setValue(String.valueOf(tomorrow.getDayOfMonth()));
         cbMonth.setValue(cbMonth.getItems().get(tomorrow.getMonthValue() - 1));
@@ -388,7 +394,8 @@ public class BookPickupPage extends BasePage {
         cbLocation.setValue(null);
         rbGeneral.setSelected(true);
         
-        // --- clear feedback label on form reset ---
+        isResetting = false; // Disable flag
+
         if (lblFeedback != null) {
             lblFeedback.setText("");
         }
@@ -499,8 +506,7 @@ public class BookPickupPage extends BasePage {
             // Define maximum operational threshold capacity per slot
             final int MAX_CAPACITY = 5;
 
-            // Find the submit button dynamically or enforce disable state
-            // (Assuming btnBook is accessible or we manage it via feedback label and validation check)
+            // Display active slot capacity warning message if threshold is reached
             if (activeBookingsCount >= MAX_CAPACITY) {
                 lblFeedback.setStyle("-fx-text-fill:" + StyleHelper.DANGER + ";-fx-font-size:13px;-fx-font-weight:bold;");
                 lblFeedback.setText("⚠️ Capacity Warning: This time slot is fully booked (" + activeBookingsCount + "/" + MAX_CAPACITY + "). Please select another slot.");
