@@ -209,6 +209,12 @@ public class BookPickupPage extends BasePage {
         rbRecyclables.selectedProperty().addListener(boolListener);
         rbBulky.selectedProperty().addListener(boolListener);
 
+        // Bind load capacity warning triggers to date and time selection controls
+        cbDay.setOnAction(e -> updateCapacityWarning());
+        cbMonth.setOnAction(e -> updateCapacityWarning());
+        cbYear.setOnAction(e -> updateCapacityWarning());
+        cbTimeSlot.setOnAction(e -> updateCapacityWarning());
+
         // ── Root container assembling layout layers ───────────────────────────
         VBox root = new VBox(24, titleBox, infoBanner, formCard);
         root.setPadding(new Insets(32, 36, 32, 36));
@@ -317,6 +323,19 @@ public class BookPickupPage extends BasePage {
                     throw new AppException("You already have a booking on " + dateStr +
                         " at " + timeSlot + ". Please choose a different date or time.");
                 }
+            }
+            
+            // Count current active pending bookings for the selected date and time slot
+            int currentSlotCount = 0;
+            for (Booking b : DataStore.bookings) {
+                if (b.getDate() != null && b.getDate().equals(dateStr)
+                        && b.getTimeSlot() != null && b.getTimeSlot().equals(timeSlot)
+                        && "Pending".equalsIgnoreCase(b.getStatus())) {
+                    currentSlotCount++;
+                }
+            }
+            if (currentSlotCount >= 5) {
+                throw new AppException("Selected time slot has reached maximum capacity (5/5). Please choose another slot or date.");
             }
 
             // Extract selected waste category toggle value and generate unique transaction identifier
@@ -443,6 +462,57 @@ public class BookPickupPage extends BasePage {
         if (lblFeedback != null) {
             lblFeedback.setStyle("-fx-text-fill:" + StyleHelper.DANGER + ";-fx-font-size:13px;");
             lblFeedback.setText(msg);
+        }
+    }
+
+    /** 
+     * Capacity Management & Load Warning Mechanism.
+     * Evaluates real-time slot occupancy by counting existing pending bookings for the selected date and time slot.
+     * Automatically disables the booking submission action if the maximum threshold (e.g., 5 bookings) is reached.
+     */
+    private void updateCapacityWarning() {
+        try {
+            // Guard clause: Ensure date and time selectors are fully initialized
+            if (cbDay.getValue() == null || cbMonth.getValue() == null || cbYear.getValue() == null || cbTimeSlot.getValue() == null) {
+                return;
+            }
+
+            // Parse temporal components securely (handles potential invalid date combinations via try-catch)
+            int day      = Integer.parseInt(cbDay.getValue());
+            int monthIdx = cbMonth.getItems().indexOf(cbMonth.getValue()) + 1;
+            int year     = Integer.parseInt(cbYear.getValue());
+            LocalDate selectedDate = LocalDate.of(year, monthIdx, day);
+
+            String dateStr  = selectedDate.format(DATE_FMT);
+            String timeSlot = cbTimeSlot.getValue();
+
+            // Count active pending bookings for the exact date and time slot combination
+            int activeBookingsCount = 0;
+            for (Booking b : DataStore.bookings) {
+                if (b.getDate() != null && b.getDate().equals(dateStr)
+                        && b.getTimeSlot() != null && b.getTimeSlot().equals(timeSlot)
+                        && "Pending".equalsIgnoreCase(b.getStatus())) {
+                    activeBookingsCount++;
+                }
+            }
+
+            // Define maximum operational threshold capacity per slot
+            final int MAX_CAPACITY = 5;
+
+            // Find the submit button dynamically or enforce disable state
+            // (Assuming btnBook is accessible or we manage it via feedback label and validation check)
+            if (activeBookingsCount >= MAX_CAPACITY) {
+                lblFeedback.setStyle("-fx-text-fill:" + StyleHelper.DANGER + ";-fx-font-size:13px;-fx-font-weight:bold;");
+                lblFeedback.setText("⚠️ Capacity Warning: This time slot is fully booked (" + activeBookingsCount + "/" + MAX_CAPACITY + "). Please select another slot.");
+            } else {
+                // If capacity is safe and feedback currently displays a capacity warning, clear it
+                if (lblFeedback.getText() != null && lblFeedback.getText().contains("Capacity Warning")) {
+                    lblFeedback.setText("");
+                }
+            }
+
+        } catch (Exception e) {
+            // Gracefully catch parsing or temporal validation exceptions during active dropdown changes
         }
     }
 }
