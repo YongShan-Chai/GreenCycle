@@ -18,22 +18,21 @@ import java.util.function.Consumer;
 
 /**
  * BookPickupPage — MEMBER 2's user pickup booking screen.
+ * Responsible for managing waste collection booking creation, form validation, 
+ * historical data quick-fill operations, and session-based resident data binding.
  *
  * Lecture reference:
  *   Topic 2 — extends BasePage, @Override build(), super() constructor
  *   Topic 7 — try-catch with MULTIPLE catch blocks, throws AppException,
  *              finally block, custom exception from DataStore
- *   Part 1  — VBox, HBox, GridPane
- *   Part 2  — Lambda event handlers for all buttons
+ *   Part 1  — VBox, HBox, GridPane layout containers
+ *   Part 2  — Lambda event handlers for all interactive buttons
  *   Part 4  — ComboBox (date parts + time + category + location),
- *              RadioButton with ToggleGroup, Label, Button, TextField (read-only)
- *
- * NOTE: Uses THREE ComboBoxes for date (day/month/year) instead of DatePicker,
- *       which is within the lecture scope (Part 4 — ComboBox).
+ *              RadioButton with ToggleGroup, Label, Button, TextField
  */
 public class BookPickupPage extends BasePage {
 
-    // Part 4 — UI control fields
+    // Part 4 — UI control fields declaration for form components
     private ComboBox<String> cbDay;
     private ComboBox<String> cbMonth;
     private ComboBox<String> cbYear;
@@ -45,67 +44,94 @@ public class BookPickupPage extends BasePage {
     private ToggleGroup      wasteGroup;
     private Label            lblFeedback;
 
+    // Standardized date formatter for consistent string parsing and data storage
     private static final DateTimeFormatter DATE_FMT =
         DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    // Constructors supporting navigation callbacks and super initialization
     public BookPickupPage() { super(); }
     public BookPickupPage(Consumer<String> navigate) { super(navigate); }
 
-    /** Topic 2 — @Override abstract build() from BasePage. */
+    /** 
+     * Topic 2 — @Override abstract build() from BasePage. 
+     * Constructs and arranges all visual UI nodes into a cohesive layout hierarchy.
+     */
     @Override
     public Node build() {
+        // Retrieve current active session resident identifier and record object
         String resId = Session.getLinkedResidentId();
         Resident me  = resId != null ? DataStore.findResidentById(resId) : null;
 
-        // ── Page title ────────────────────────────────────────────────────────
+        // ── Page title component setup ────────────────────────────────────────
         Label lblTitle = new Label("Book a Pickup");
         lblTitle.setStyle(StyleHelper.pageTitle());
         Label lblSub = new Label("Schedule a waste collection pickup for your unit.");
         lblSub.setStyle(StyleHelper.mutedLabel());
         VBox titleBox = new VBox(4, lblTitle, lblSub);
 
-        // ── Resident info banner ──────────────────────────────────────────────
+        // ── Resident info banner component setup ──────────────────────────────
         VBox infoBanner = buildResidentBanner(me, resId);
 
-        // ── Booking form ──────────────────────────────────────────────────────
+        // ── Booking form header with "Load Last Booking" button on the top-right ──
         Label lblFormTitle = new Label("Pickup Details");
         lblFormTitle.setStyle(StyleHelper.sectionTitle());
 
-        // Date selection using THREE ComboBoxes (Part 4 — ComboBox)
+        // Dedicated utility button styled identically to match primary action buttons
+        Button btnLastBooking = new Button("Load Last Booking");
+        btnLastBooking.setStyle(
+            "-fx-background-color: " + StyleHelper.PRIMARY + ";" +
+            "-fx-text-fill: white;" +
+            "-fx-font-size: 13px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-background-radius: 8;" + 
+            "-fx-cursor: hand;" +
+            "-fx-padding: 8 16;" + 
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 4, 0, 0, 1);"
+        );
+        btnLastBooking.setOnAction(e -> handleQuickFill(resId));
+
+        Region titleSpacer = new Region();
+        HBox.setHgrow(titleSpacer, Priority.ALWAYS);
+        HBox formHeaderRow = new HBox(10, lblFormTitle, titleSpacer, btnLastBooking);
+        formHeaderRow.setAlignment(Pos.CENTER_LEFT);
+
+        // Initialize Day ComboBox with numerical sequence values (1 to 31)
         cbDay = new ComboBox<String>();
         for (int i = 1; i <= 31; i++) cbDay.getItems().add(String.valueOf(i));
         cbDay.setPromptText("Day");
         cbDay.setPrefWidth(80);
 
+        // Initialize Month ComboBox with calendar month literal names
         cbMonth = new ComboBox<String>();
         cbMonth.getItems().addAll("January","February","March","April","May","June",
             "July","August","September","October","November","December");
         cbMonth.setPromptText("Month");
         cbMonth.setPrefWidth(130);
 
+        // Initialize Year ComboBox with valid academic/operational project years
         cbYear = new ComboBox<String>();
         cbYear.getItems().addAll("2026", "2027", "2028");
         cbYear.setPromptText("Year");
         cbYear.setPrefWidth(90);
 
-        // Pre-select tomorrow
+        // Automatically pre-select tomorrow's date as the default booking target
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         cbDay.setValue(String.valueOf(tomorrow.getDayOfMonth()));
         cbMonth.setValue(cbMonth.getItems().get(tomorrow.getMonthValue() - 1));
         cbYear.setValue(String.valueOf(tomorrow.getYear()));
 
-        // Part 1 — HBox groups the three date combo boxes
+        // Part 1 — HBox horizontally groups the three individual date combo boxes
         HBox dateRow = new HBox(8, cbDay, cbMonth, cbYear);
         dateRow.setAlignment(Pos.CENTER_LEFT);
 
-        // Part 4 — ComboBox for time slot
+        // Part 4 — ComboBox configuration for operational daily time slots
         cbTimeSlot = new ComboBox<String>();
         cbTimeSlot.getItems().addAll(
             "Morning (8-10am)", "Afternoon (1-3pm)", "Evening (5-7pm)");
         cbTimeSlot.setPromptText("Select a time slot");
         cbTimeSlot.setPrefWidth(240);
 
-        // Part 4 — RadioButton with ToggleGroup for waste category
+        // Part 4 — RadioButton elements bound together using a shared ToggleGroup
         wasteGroup    = new ToggleGroup();
         rbGeneral     = new RadioButton("General Waste");
         rbRecyclables = new RadioButton("Recyclables  (+20 pts)");
@@ -113,19 +139,19 @@ public class BookPickupPage extends BasePage {
         rbGeneral.setToggleGroup(wasteGroup);
         rbRecyclables.setToggleGroup(wasteGroup);
         rbBulky.setToggleGroup(wasteGroup);
-        rbGeneral.setSelected(true);
+        rbGeneral.setSelected(true); // Default selection set to General Waste
         for (RadioButton rb : new RadioButton[]{rbGeneral, rbRecyclables, rbBulky}) {
             rb.setStyle(StyleHelper.bodyText());
         }
         HBox radioRow = new HBox(24, rbGeneral, rbRecyclables, rbBulky);
 
-        // Part 4 — ComboBox for collection point
+        // Part 4 — ComboBox configuration for physical estate collection bays
         cbLocation = new ComboBox<String>();
         cbLocation.getItems().addAll("Block A Bay", "Block B Bay", "Main Gate");
         cbLocation.setPromptText("Select collection point");
         cbLocation.setPrefWidth(240);
 
-        // Part 1 — GridPane aligns form labels and controls
+        // Part 1 — GridPane strictly aligns form text labels with interactive input controls
         GridPane grid = new GridPane();
         grid.setHgap(20); grid.setVgap(16);
         grid.add(makeFormLabel("Pickup Date :"),      0, 0); grid.add(dateRow,    1, 0);
@@ -133,37 +159,69 @@ public class BookPickupPage extends BasePage {
         grid.add(makeFormLabel("Waste Category :"),    0, 2); grid.add(radioRow,   1, 2);
         grid.add(makeFormLabel("Collection Point :"),  0, 3); grid.add(cbLocation, 1, 3);
 
-        // Feedback label
+        // Dynamic feedback notification label for handling user action messages
         lblFeedback = new Label("");
         lblFeedback.setStyle(StyleHelper.mutedLabel());
         lblFeedback.setWrapText(true);
 
+        // Informational caption explaining incentive point structures
         Label noteLabel = new Label(
             "Points awarded on completion: Recyclables = 20 pts | Others = 10 pts");
         noteLabel.setStyle("-fx-font-size:11px;-fx-text-fill:" + StyleHelper.TEXT_MUTED +
             ";-fx-font-style:italic;");
 
-        Button btnBook  = makeBtn("Book Pickup");
-        Button btnClear = makeGhostBtn("Clear");
-        // Part 2 — Lambda event handlers
+        // Interactive command buttons initialization
+        Button btnBook      = makeBtn("Book Pickup");
+        Button btnClear     = makeGhostBtn("Clear");
+
+        // Part 2 — Lambda expression event handlers binding user actions to controllers
         btnBook.setOnAction(e -> handleBook(resId, me));
         btnClear.setOnAction(e -> clearForm());
-
+        
+        // Group command buttons inside a horizontal layout container (keeping bottom row clean)
         HBox btnRow = new HBox(12, btnBook, btnClear);
 
+        // Encapsulate form controls inside a styled visual card container
         VBox formCard = makeCard(20);
         formCard.getChildren().addAll(
-            lblFormTitle, new Separator(), grid, noteLabel, lblFeedback, btnRow);
+            formHeaderRow, new Separator(), grid, noteLabel, lblFeedback, btnRow);
+            
+        // --- Added: clear feedback when user manually changes any form control ---
+        javafx.beans.value.ChangeListener<String> stringListener = (obs, oldVal, newVal) -> {
+            if (lblFeedback != null && !lblFeedback.getText().isEmpty()) {
+                lblFeedback.setText("");
+            }
+        };
 
-        // ── Root ──────────────────────────────────────────────────────────────
+        cbDay.valueProperty().addListener(stringListener);
+        cbMonth.valueProperty().addListener(stringListener);
+        cbYear.valueProperty().addListener(stringListener);
+        cbTimeSlot.valueProperty().addListener(stringListener);
+        cbLocation.valueProperty().addListener(stringListener);
+
+        javafx.beans.value.ChangeListener<Boolean> boolListener = (obs, oldVal, newVal) -> {
+            if (newVal && lblFeedback != null && !lblFeedback.getText().isEmpty()) {
+                lblFeedback.setText("");
+            }
+        };
+
+        rbGeneral.selectedProperty().addListener(boolListener);
+        rbRecyclables.selectedProperty().addListener(boolListener);
+        rbBulky.selectedProperty().addListener(boolListener);
+
+        // ── Root container assembling layout layers ───────────────────────────
         VBox root = new VBox(24, titleBox, infoBanner, formCard);
         root.setPadding(new Insets(32, 36, 32, 36));
         root.setStyle("-fx-background-color:" + StyleHelper.BG + ";");
         return root;
     }
 
-    // ── Resident info banner ──────────────────────────────────────────────────
+    /** 
+     * Generates and styles the resident information identification banner component.
+     * Evaluates current tier standing and accumulated loyalty reward points.
+     */
     private VBox buildResidentBanner(Resident me, String resId) {
+        // Defensive check: Handle cases where account record is unlinked or missing
         if (me == null) {
             Label warn = new Label("No resident record linked to your account. Contact an administrator.");
             warn.setStyle("-fx-text-fill:" + StyleHelper.DANGER + ";-fx-font-size:13px;");
@@ -197,31 +255,36 @@ public class BookPickupPage extends BasePage {
         return banner;
     }
 
-    // ── Book handler — Topic 7: multiple catch blocks, finally ────────────────
+    /** 
+     * Book handler method — Topic 7 implementation: multiple catch blocks, custom exception handling, and finally cleanup.
+     * Validates form parameters, checks duplicate scheduling constraints, and appends a new booking entity to DataStore.
+     */
     private void handleBook(String resId, Resident me) {
         lblFeedback.setStyle(StyleHelper.mutedLabel());
         lblFeedback.setText("");
 
         try {
-            // Topic 7 — throws AppException on validation failure
+            // Topic 7 — Throw custom AppException if resident entity link is invalid
             if (me == null) throw new AppException(
                 "No resident record linked. Contact an administrator.");
 
-            // Validate date selection
+            // Comprehensive null validation across date selection combo boxes
             if (cbDay.getValue() == null || cbMonth.getValue() == null || cbYear.getValue() == null) {
                 throw new AppException("Please select a complete date (day, month and year).");
             }
 
-            // Topic 7 — multiple catch: DateTimeException caught separately below
+            // Topic 7 — Multiple catch structure: parsing raw input values into temporal date objects
             int day      = Integer.parseInt(cbDay.getValue());
             int monthIdx = cbMonth.getItems().indexOf(cbMonth.getValue()) + 1;
             int year     = Integer.parseInt(cbYear.getValue());
-            LocalDate selectedDate = LocalDate.of(year, monthIdx, day); // may throw DateTimeException
+            LocalDate selectedDate = LocalDate.of(year, monthIdx, day); // May throw DateTimeException for invalid calendar days
 
+            // Validate that selected pickup date is not located in historical past time
             if (selectedDate.isBefore(LocalDate.now())) {
                 throw new AppException("Pickup date cannot be in the past. Please select a future date.");
             }
 
+            // Time slot validity validation check preventing booking expired timeslots on the current day
             if (selectedDate.isEqual(LocalDate.now()) && cbTimeSlot.getValue() != null) {
                 int currentHour = java.time.LocalTime.now().getHour();
                 String slot = cbTimeSlot.getValue();
@@ -234,6 +297,7 @@ public class BookPickupPage extends BasePage {
                 }
             }
 
+            // Ensure mandatory selection criteria are satisfied for operational controls
             if (cbTimeSlot.getValue() == null) {
                 throw new AppException("Please select a time slot.");
             }
@@ -244,7 +308,7 @@ public class BookPickupPage extends BasePage {
             String dateStr  = selectedDate.format(DATE_FMT);
             String timeSlot = cbTimeSlot.getValue();
 
-            // Duplicate booking check
+            // Iterate over existing data collection to prevent duplicate active slot bookings
             for (Booking b : DataStore.bookings) {
                 if (b.getResidentId().equalsIgnoreCase(resId)
                         && b.getDate().equals(dateStr)
@@ -255,12 +319,16 @@ public class BookPickupPage extends BasePage {
                 }
             }
 
+            // Extract selected waste category toggle value and generate unique transaction identifier
             String category  = ((RadioButton) wasteGroup.getSelectedToggle())
                 .getText().replace("  (+20 pts)", "");
             String bookingId = DataStore.generateBookingId();
+            
+            // Persist newly instantiated booking object into shared centralized memory repository
             DataStore.bookings.add(new Booking(
                 bookingId, resId, me.getName(), dateStr, timeSlot, category, cbLocation.getValue()));
-
+            
+            // Display success notification feedback message
             lblFeedback.setStyle("-fx-text-fill:" + StyleHelper.SUCCESS +
                 ";-fx-font-size:13px;-fx-font-weight:bold;");
             lblFeedback.setText("Booking confirmed!  " + bookingId +
@@ -268,27 +336,30 @@ public class BookPickupPage extends BasePage {
             clearForm();
 
         } catch (AppException e) {
-            // Topic 7 — catch custom AppException (validation errors)
+            // Topic 7 — Catch block handling custom business validation exceptions thrown from model layer
             showError(e.getMessage());
 
         } catch (java.time.DateTimeException e) {
-            // Topic 7 — catch invalid date combination (e.g. Feb 30)
+            // Topic 7 — Catch block handling illegal calendar date combinations (e.g., February 30th)
             showError("Invalid date combination (e.g. February does not have 30 days). Please check your selection.");
 
         } catch (NumberFormatException e) {
-            // Topic 7 — catch number format issues from Integer.parseInt
+            // Topic 7 — Catch block handling numeric conversion failures during parsing operations
             showError("Please select a valid date.");
 
         } catch (Exception e) {
-            // Topic 7 — catch any other unexpected exception
+            // Topic 7 — Catch block acting as a general safety net for unexpected application anomalies
             showError("Unexpected error: " + e.getMessage());
 
         } finally {
-            // Topic 7 — finally: always make the feedback label visible
+            // Topic 7 — Finally block guaranteeing execution state updates regardless of try-catch flow outcome
             if (lblFeedback != null) lblFeedback.setVisible(true);
         }
     }
 
+    /** 
+     * Clears and resets all interactive form input controls back to their default baseline states.
+     */
     private void clearForm() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         cbDay.setValue(String.valueOf(tomorrow.getDayOfMonth()));
@@ -297,10 +368,81 @@ public class BookPickupPage extends BasePage {
         cbTimeSlot.setValue(null);
         cbLocation.setValue(null);
         rbGeneral.setSelected(true);
+        
+        // --- clear feedback label on form reset ---
+        if (lblFeedback != null) {
+            lblFeedback.setText("");
+        }
     }
 
+    /** 
+     * Quick Fill Handler Method — Enhances user experience by automatically retrieving 
+     * and populating form controls with parameters from the resident's most recent historical booking entry.
+     */
+    private void handleQuickFill(String currentResidentId) {
+        if (lblFeedback != null) {
+            lblFeedback.setText("");
+        }
+
+        try {
+            // Validate session linkage state prior to executing query operations
+            if (currentResidentId == null || currentResidentId.trim().isEmpty()) {
+                throw new AppException("No resident linked to current session.");
+            }
+
+            // Filter historical booking records matching the currently active resident ID
+            java.util.ArrayList<Booking> residentBookings = new java.util.ArrayList<Booking>();
+            for (Booking b : DataStore.bookings) {
+                if (b.getResidentId() != null && b.getResidentId().equalsIgnoreCase(currentResidentId)) {
+                    residentBookings.add(b);
+                }
+            }
+
+            // Verify whether any past booking history records exist within the data repository
+            if (residentBookings.isEmpty()) {
+                throw new AppException("No previous bookings found. Please fill in manually.");
+            }
+
+            // Retrieve the latest chronological booking entry from the filtered list collection
+            Booking lastBooking = residentBookings.get(residentBookings.size() - 1);
+
+            // Populate waste category radio button controls based on historical configuration data
+            if (lastBooking.getWasteCategory() != null) {
+                String cat = lastBooking.getWasteCategory();
+                if (cat.contains("General")) rbGeneral.setSelected(true);
+                else if (cat.contains("Recyclables")) rbRecyclables.setSelected(true);
+                else if (cat.contains("Bulky")) rbBulky.setSelected(true);
+            }
+
+            // Populate time slot combo box selection value
+            if (lastBooking.getTimeSlot() != null) {
+                cbTimeSlot.setValue(lastBooking.getTimeSlot());
+            }
+
+            // Populate collection point combo box selection value
+            if (lastBooking.getCollectionPoint() != null) {
+                cbLocation.setValue(lastBooking.getCollectionPoint());
+            }
+
+            // Render success status message confirming successful quick-fill data injection
+            if (lblFeedback != null) {
+                lblFeedback.setStyle("-fx-text-fill:" + StyleHelper.SUCCESS + ";-fx-font-size:13px;-fx-font-weight:bold;");
+                lblFeedback.setText("Quick filled from last booking (" + lastBooking.getBookingId() + ").");
+            }
+
+        } catch (AppException e) {
+            // Forward caught exception messages to the standard error display helper routine
+            showError(e.getMessage());
+        }
+    }
+
+    /** 
+     * Helper routine responsible for styling and presenting error notification messages to users.
+     */
     private void showError(String msg) {
-        lblFeedback.setStyle("-fx-text-fill:" + StyleHelper.DANGER + ";-fx-font-size:13px;");
-        lblFeedback.setText(msg);
+        if (lblFeedback != null) {
+            lblFeedback.setStyle("-fx-text-fill:" + StyleHelper.DANGER + ";-fx-font-size:13px;");
+            lblFeedback.setText(msg);
+        }
     }
 }
