@@ -222,6 +222,18 @@ public class BookPickupPage extends BasePage {
                 throw new AppException("Pickup date cannot be in the past. Please select a future date.");
             }
 
+            if (selectedDate.isEqual(LocalDate.now()) && cbTimeSlot.getValue() != null) {
+                int currentHour = java.time.LocalTime.now().getHour();
+                String slot = cbTimeSlot.getValue();
+                if (slot.contains("Morning") && currentHour >= 10) {
+                    throw new AppException("Morning slot has already passed for today. Please choose another slot or date.");
+                } else if (slot.contains("Afternoon") && currentHour >= 15) {
+                    throw new AppException("Afternoon slot has already passed for today. Please choose another slot or date.");
+                } else if (slot.contains("Evening") && currentHour >= 19) {
+                    throw new AppException("Evening slot has already passed for today. Please choose tomorrow or later.");
+                }
+            }
+
             if (cbTimeSlot.getValue() == null) {
                 throw new AppException("Please select a time slot.");
             }

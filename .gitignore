@@ -16,6 +16,9 @@
 
 # VS Code local project settings
 /.vscode/
+.classpath
+.project
+.settings/
 
 # Eclipse workspace metadata
 .metadata/
