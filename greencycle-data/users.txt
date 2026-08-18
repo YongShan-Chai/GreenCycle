@@ -4,3 +4,8 @@ admin,admin123,admin,null
 ahmad,pass123,user,R001
 siti,pass123,user,R002
 chen,pass123,user,R003
+jiaxuan,pass123,user,R101
+meng,pass123,user,R102
+aminah,pass123,user,R103
+john,pass123,user,R104
+meiling,pass123,user,R105
