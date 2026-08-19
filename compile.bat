@@ -9,7 +9,8 @@ if not exist out mkdir out
 dir /s /b src\*.java > sources.txt
 
 echo Compiling all source files...
-javac -d out @sources.txt
+javac -encoding UTF-8 -d out @sources.txt
+
 
 if %errorlevel% == 0 (
     del sources.txt
