@@ -509,7 +509,7 @@ public class BookPickupPage extends BasePage {
             // Display active slot capacity warning message if threshold is reached
             if (activeBookingsCount >= MAX_CAPACITY) {
                 lblFeedback.setStyle("-fx-text-fill:" + StyleHelper.DANGER + ";-fx-font-size:13px;-fx-font-weight:bold;");
-                lblFeedback.setText("Capacity Warning: This time slot is fully booked (" + activeBookingsCount + "/" + MAX_CAPACITY + "). Please select another slot.");
+                lblFeedback.setText("\u26A0 Capacity Warning: This time slot is fully booked (" + activeBookingsCount + "/" + MAX_CAPACITY + "). Please select another slot.");
             } else {
                 // If capacity is safe and feedback currently displays a capacity warning, clear it
                 if (lblFeedback.getText() != null && lblFeedback.getText().contains("Capacity Warning")) {
